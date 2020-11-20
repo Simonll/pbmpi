@@ -99,6 +99,9 @@ void RASCATGammaPhyloProcess::SlaveExecute(MESSAGE signal)	{
 
 	switch(signal) {
 
+    case SITELOGLCUTOFF:
+        SlaveSetSiteLogLCutoff();
+        break;
 	case UPDATE_RATE:
 		SlaveUpdateRateSuffStat();
 		break;
@@ -178,6 +181,8 @@ void RASCATGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 	int savetrees = 0;
 
 	int ancstatepostprobs = 0;
+
+    siteloglcutoff = 0;
 
 	try	{
 
@@ -271,6 +276,10 @@ void RASCATGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 			else if (s == "-sitelogl")	{
 				sitelogl = 1;
 			}
+            else if (s == "-cutoff")    {
+                i++;
+                siteloglcutoff = atof(argv[i]);
+            }
 			else if (s == "-r")	{
 				rates = 1;
 			}
@@ -339,12 +348,14 @@ void RASCATGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 		ReadMapStats(name,burnin,every,until);
 	}
 	else if (cv)	{
+        GlobalSetSiteLogLCutoff();
 		ReadCV(testdatafile,name,burnin,every,until);
 	}
 	else if (ancstatepostprobs)	{
 		ReadAncestral(name,burnin,every,until);
 	}
 	else if (sitelogl)	{
+        GlobalSetSiteLogLCutoff();
 		ReadSiteLogL(name,burnin,every,until);
 	}
 	else if (rates)	{
@@ -359,6 +370,17 @@ void RASCATGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 	else	{
 		Read(name,burnin,every,until);
 	}
+}
+
+void RASCATGammaPhyloProcess::GlobalSetSiteLogLCutoff()  {
+
+	MESSAGE signal = SITELOGLCUTOFF;
+	MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
+	MPI_Bcast(&siteloglcutoff,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+}
+
+void RASCATGammaPhyloProcess::SlaveSetSiteLogLCutoff()  {
+	MPI_Bcast(&siteloglcutoff,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
 }
 
 void RASCATGammaPhyloProcess::ReadSiteProfiles(string name, int burnin, int every, int until)	{
