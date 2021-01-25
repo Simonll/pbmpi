@@ -298,11 +298,18 @@ void RASCATGTRFiniteGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 			else if (s == "-mapstats")	{
 				mapstats = 1;
 			}
-			else if (s == "-cv")	{
+			else if (s == "-oldcv")	{
 				cv = 1;
 				i++;
 				testdatafile = argv[i];
 			}
+
+			else if ((s == "-cv") || (s == "-sitecv"))	{
+				cv = 2;
+				i++;
+				testdatafile = argv[i];
+			}
+
 			else if ( (s == "-x") || (s == "-extract") )	{
 				i++;
 				if (i == argc) throw(0);
@@ -354,8 +361,11 @@ void RASCATGTRFiniteGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 		exit(1);
 	}
 
-	if (cv)	{
+	if (cv == 1)	{
 		ReadCV(testdatafile,name,burnin,every,until);
+	}
+    else if (cv == 2)	{
+		ReadSiteCV(testdatafile,name,burnin,every,until);
 	}
 	else if (sitelogl)	{
 		ReadSiteLogL(name,burnin,every,until);
