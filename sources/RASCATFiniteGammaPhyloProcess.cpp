@@ -103,9 +103,11 @@ void RASCATFiniteGammaPhyloProcess::SlaveExecute(MESSAGE signal)	{
 		SlavePrintTree();
 		break;
 	*/
+    /*
     case SITELOGCV:
         SlaveComputeSiteLogCVScore();
         break;
+    */
 	case UPDATE_RATE:
 		SlaveUpdateRateSuffStat();
 		break;
@@ -425,6 +427,7 @@ void RASCATFiniteGammaPhyloProcess::SlaveComputeCVScore()	{
 
 }
 
+/*
 void RASCATFiniteGammaPhyloProcess::SlaveComputeSiteLogCVScore()	{
 
 	if (! SumOverRateAllocations())	{
@@ -496,6 +499,7 @@ void RASCATFiniteGammaPhyloProcess::SlaveComputeSiteLogCVScore()	{
 
 	sitemax = bksitemax;
 }
+*/
 
 void RASCATFiniteGammaPhyloProcess::SlaveComputeSiteLogL()	{
 

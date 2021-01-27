@@ -131,6 +131,9 @@ void RASCATGTRSBDPGammaPhyloProcess::SlaveExecute(MESSAGE signal)	{
 	case MIX_MOVE:
 		SlaveMixMove();
 		break;
+    case SITELOGLCUTOFF:
+        SlaveSetSiteLogLCutoff();
+        break;
 	default:
 		PhyloProcess::SlaveExecute(signal);
 	}
@@ -218,6 +221,7 @@ void RASCATGTRSBDPGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 	int savetrees = 0;
 
 	int ancstatepostprobs = 0;
+    siteloglcutoff = 0;
 
 	try	{
 
@@ -317,7 +321,10 @@ void RASCATGTRSBDPGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 			else if (s == "-sitelogl")	{
 				sitelogl = 1;
 			}
-
+            else if (s == "-cutoff")    {
+                i++;
+                siteloglcutoff = atof(argv[i]);
+            }
 			else if (s == "-ss")	{
 				ss = 1;
 			}
@@ -380,9 +387,11 @@ void RASCATGTRSBDPGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 	}
 
 	if (cv == 1)	{
+        GlobalSetSiteLogLCutoff();
 		ReadCV(testdatafile,name,burnin,every,until);
 	}
     else if (cv == 2)	{
+        GlobalSetSiteLogLCutoff();
 		ReadSiteCV(testdatafile,name,burnin,every,until);
 	}
 	else if (rates)	{
@@ -392,6 +401,7 @@ void RASCATGTRSBDPGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 		ReadAncestral(name,burnin,every,until);
 	}
 	else if (sitelogl)	{
+        GlobalSetSiteLogLCutoff();
 		ReadSiteLogL(name,burnin,every,until);
 	}
 	else if (ss)	{
@@ -415,6 +425,17 @@ void RASCATGTRSBDPGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 	else	{
 		Read(name,burnin,every,until);
 	}
+}
+
+void RASCATGTRSBDPGammaPhyloProcess::GlobalSetSiteLogLCutoff()  {
+
+	MESSAGE signal = SITELOGLCUTOFF;
+	MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
+	MPI_Bcast(&siteloglcutoff,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+}
+
+void RASCATGTRSBDPGammaPhyloProcess::SlaveSetSiteLogLCutoff()  {
+	MPI_Bcast(&siteloglcutoff,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
 }
 
 void RASCATGTRSBDPGammaPhyloProcess::ReadRelRates(string name, int burnin, int every, int until)	{
@@ -553,15 +574,24 @@ void RASCATGTRSBDPGammaPhyloProcess::SlaveComputeCVScore()	{
 		exit(1);
 	}
 
+    int ncomp = GetNcomponent();
+    double totw = 0;
+    while (ncomp && (totw < siteloglcutoff))    {
+        ncomp--;
+        totw += weight[ncomp];
+    }
+
 	sitemax = sitemin + testsitemax - testsitemin;
 	double** sitelogl = new double*[GetNsite()];
 	for (int i=sitemin; i<sitemax; i++)	{
-		sitelogl[i] = new double[GetNcomponent()];
+		sitelogl[i] = new double[ncomp];
+		// sitelogl[i] = new double[GetNcomponent()];
 	}
 	
 	// UpdateMatrices();
 
-	for (int k=0; k<GetNcomponent(); k++)	{
+	for (int k=0; k<ncomp; k++)	{
+	// for (int k=0; k<GetNcomponent(); k++)	{
 		for (int i=sitemin; i<sitemax; i++)	{
 			ExpoConjugateGTRSBDPProfileProcess::alloc[i] = k;
 		}
@@ -574,14 +604,16 @@ void RASCATGTRSBDPGammaPhyloProcess::SlaveComputeCVScore()	{
 	double total = 0;
 	for (int i=sitemin; i<sitemax; i++)	{
 		double max = 0;
-		for (int k=0; k<GetNcomponent(); k++)	{
+		for (int k=0; k<ncomp; k++) {
+		// for (int k=0; k<GetNcomponent(); k++)	{
 			if ((!k) || (max < sitelogl[i][k]))	{
 				max = sitelogl[i][k];
 			}
 		}
 		double tot = 0;
 		double totweight = 0;
-		for (int k=0; k<GetNcomponent(); k++)	{
+		for (int k=0; k<ncomp; k++)	{
+		// for (int k=0; k<GetNcomponent(); k++)	{
 			tot += weight[k] * exp(sitelogl[i][k] - max);
 			totweight += weight[k];
 		}
@@ -606,14 +638,23 @@ void RASCATGTRSBDPGammaPhyloProcess::SlaveComputeSiteLogL()	{
 		exit(1);
 	}
 
+    int ncomp = GetNcomponent();
+    double totw = 0;
+    while (ncomp && (totw < siteloglcutoff))    {
+        ncomp--;
+        totw += weight[ncomp];
+    }
+
 	double** sitelogl = new double*[GetNsite()];
 	for (int i=sitemin; i<sitemax; i++)	{
-		sitelogl[i] = new double[GetNcomponent()];
+		sitelogl[i] = new double[ncomp];
+		// sitelogl[i] = new double[GetNcomponent()];
 	}
 	
 	// UpdateMatrices();
 
-	for (int k=0; k<GetNcomponent(); k++)	{
+	for (int k=0; k<ncomp; k++)	{
+	// for (int k=0; k<GetNcomponent(); k++)	{
 		for (int i=sitemin; i<sitemax; i++)	{
 			ExpoConjugateGTRSBDPProfileProcess::alloc[i] = k;
 		}
@@ -633,14 +674,16 @@ void RASCATGTRSBDPGammaPhyloProcess::SlaveComputeSiteLogL()	{
 	}
 	for (int i=sitemin; i<sitemax; i++)	{
 		double max = 0;
-		for (int k=0; k<GetNcomponent(); k++)	{
+		for (int k=0; k<ncomp; k++)	{
+		// for (int k=0; k<GetNcomponent(); k++)	{
 			if ((!k) || (max < sitelogl[i][k]))	{
 				max = sitelogl[i][k];
 			}
 		}
 		double tot = 0;
 		double totweight = 0;
-		for (int k=0; k<GetNcomponent(); k++)	{
+		for (int k=0; k<ncomp; k++)	{
+		// for (int k=0; k<GetNcomponent(); k++)	{
 			tot += weight[k] * exp(sitelogl[i][k] - max);
 			totweight += weight[k];
 		}
