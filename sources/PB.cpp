@@ -75,6 +75,8 @@ int main(int argc, char* argv[])	{
 
 	int topoburnin = 0;
     bool help = false;
+    
+    int nmodemax = 1000;
 
 	try	{
 
@@ -348,6 +350,10 @@ int main(int argc, char* argv[])	{
 			else if ((s == "-dp") || (s == "-sbdp")	|| (s == "-cat")){
 				mixturetype = 3;
 			}
+            else if (s == "-dpnmax")    {
+                i++;
+                nmodemax = atoi(argv[i]);
+            }
 			/*
 			else if (s == "-tdp")	{
 				mixturetype = 4;
@@ -566,7 +572,7 @@ int main(int argc, char* argv[])	{
 				exit(1);
 			}
 		}
-		model = new Model(datafile,treefile,modeltype,dgam,mixturetype,ncat,type,suffstat,fixncomp,empmix,mixtype,rrtype,iscodon,fixtopo,NSPR,NNNI,fixcodonprofile,fixomega,fixbl,omegaprior,kappaprior,dirweightprior,mintotweight,dc,every,until,saveall,incinit,topoburnin,name,myid,nprocs);
+		model = new Model(datafile,treefile,modeltype,dgam,mixturetype,ncat,nmodemax,type,suffstat,fixncomp,empmix,mixtype,rrtype,iscodon,fixtopo,NSPR,NNNI,fixcodonprofile,fixomega,fixbl,omegaprior,kappaprior,dirweightprior,mintotweight,dc,every,until,saveall,incinit,topoburnin,name,myid,nprocs);
 		if (! myid)	{
 			// cerr << "create files\n";
 			cerr << '\n';
