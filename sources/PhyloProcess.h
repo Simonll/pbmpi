@@ -366,7 +366,7 @@ class PhyloProcess : public virtual SubstitutionProcess, public virtual BranchPr
 	}
 
 	double GetLogPrior()	{
-		return 0;
+        return LogBranchPrior() + LogRatePrior() + LogProfilePrior();
 	}
 
 	double GetLogLikelihood()	{
