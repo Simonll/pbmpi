@@ -76,7 +76,7 @@ int main(int argc, char* argv[])	{
 	int topoburnin = 0;
 
 	int steppingstep = 0;
-	int steppingtaxstep = 0;
+	int steppingtaxstep = -1;
     int steppingburnin = 10;
     int steppingsize = 10;
     string empstepping = "None";
@@ -152,8 +152,8 @@ int main(int argc, char* argv[])	{
                 i++;
                 steppingstep = atoi(argv[i]);
                 i++;
-                steppingtaxstep = atoi(argv[i]);
-                i++;
+                // steppingtaxstep = atoi(argv[i]);
+                // i++;
                 steppingburnin = atoi(argv[i]);
                 i++;
                 steppingsize = atoi(argv[i]);
@@ -544,12 +544,6 @@ int main(int argc, char* argv[])	{
 			exit(1);
 		}
 	}
-    if (mixturetype == 1)   {
-        if ((ncat == 1) || (empmix))  {
-            dirweightprior = 1;
-        }
-    }
-
 	if (randfix != -1)	{
 		rnd::init(1,randfix);
 	}
@@ -563,6 +557,13 @@ int main(int argc, char* argv[])	{
 		exit(1);
 	}
 	if (datafile != "")	{
+
+        if (mixturetype == 1)   {
+            if ((ncat == 1) || (empmix))  {
+                dirweightprior = 1;
+            }
+        }
+
 		if (myid == 0) {
 			cerr << "model:\n";
 			if (mixturetype == 1)	{
