@@ -2816,7 +2816,7 @@ void PhyloProcess::ReadSiteCV(string testdatafile, string name, int burnin, int 
 	cerr << '\n';
 }
 
-void PhyloProcess::ReadSiteLogL(string name, int burnin, int every, int until)	{
+void PhyloProcess::ReadSiteLogL(string name, int burnin, int every, int until, int verbose)	{
 
 	ifstream is((name + ".chain").c_str());
 	if (!is)	{
@@ -2897,6 +2897,18 @@ void PhyloProcess::ReadSiteLogL(string name, int burnin, int every, int until)	{
 		}
 	}
     cerr << '\n';
+
+    if (verbose)    {
+        ofstream sos((name + ".mcmcsitelogls").c_str());
+        for (int j=0; j<samplesize; j++)    {
+            for (int i=0; i<GetNsite(); i++) {
+                sos << logl[i][j] << '\t';
+            }
+            sos << '\n';
+        }
+
+        cerr << "site log likelihoods over the mcmc in " << name << ".mcmcsitelogls\n";
+    }
 
     meantotlogl /= samplesize;
     vartotlogl /= samplesize;

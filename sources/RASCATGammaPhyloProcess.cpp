@@ -178,6 +178,7 @@ void RASCATGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 	// 3 : compositional statistic
 	int cv = 0;
 	int sitelogl = 0;
+    int verbose = 0;
 	int rates = 0;
 	string testdatafile = "";
 	int rateprior = 0;
@@ -299,6 +300,9 @@ void RASCATGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 			else if (s == "-sitelogl")	{
 				sitelogl = 1;
 			}
+            else if (s == "-v") {
+                verbose =1 ;
+            }
             else if (s == "-cutoff")    {
                 i++;
                 siteloglcutoff = atof(argv[i]);
@@ -400,7 +404,7 @@ void RASCATGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
     }
 	else if (sitelogl)	{
         GlobalSetSiteLogLCutoff();
-		ReadSiteLogL(name,burnin,every,until);
+		ReadSiteLogL(name,burnin,every,until,verbose);
 	}
 	else if (rates)	{
 		ReadSiteRates(name,burnin,every,until);
