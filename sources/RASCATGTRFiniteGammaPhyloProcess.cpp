@@ -301,23 +301,18 @@ void RASCATGTRFiniteGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 			else if (s == "-map")	{
 				map = 1;
 			}
-<<<<<<< HEAD
 			else if (s == "-mapstats")	{
 				mapstats = 1;
 			}
-=======
             else if (s == "-posthyper") {
                 posthyper = 1;
             }
-
->>>>>>> extending stepping to all models
-			else if (s == "-oldcv")	{
+			else if (s == "-jointcv")	{
 				cv = 1;
 				i++;
 				testdatafile = argv[i];
 			}
-
-			else if ((s == "-cv") || (s == "-sitecv"))	{
+			else if (s == "-sitecv")	{
 				cv = 2;
 				i++;
 				testdatafile = argv[i];
@@ -404,15 +399,12 @@ void RASCATGTRFiniteGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 	else if (map)	{
 		ReadMap(name,burnin,every,until);
 	}
-<<<<<<< HEAD
 	else if (mapstats)	{
 		ReadMapStats(name,burnin,every,until);
 	}
-=======
     else if (posthyper) {
 		ReadPostHyper(name,burnin,every,until);
     }
->>>>>>> extending stepping to all models
 	else	{
 		Read(name,burnin,every,until);
 	}
