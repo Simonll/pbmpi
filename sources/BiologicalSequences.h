@@ -44,6 +44,7 @@ using namespace std;
 	const char dnaletters[] = {'a','c','g','t'};
 	const char RNAletters[] = {'A','C','G','U'};
 	const char rnaletters[] = {'a','c','g','u'};
+	// AA categories taken from https://doi.org/10.1093/gbe/evt083
 	const int VolTable[] = {0,0,0,1,1,0,1,1,1,1,1,0,0,1,1,0,0,0,1,1};
 	const int PolTable[] = {0,1,1,1,0,0,1,0,1,0,0,1,0,1,1,1,1,0,1,1};
 	const int ChrTable[] = {2,2,1,1,2,2,0,2,0,2,2,2,2,2,0,2,2,2,2,2};	
