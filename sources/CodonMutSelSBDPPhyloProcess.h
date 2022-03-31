@@ -248,6 +248,11 @@ class CodonMutSelSBDPPhyloProcess : public virtual CodonMutSelSBDPSubstitutionPr
 	int CountNonSynMapping();
 	int GlobalNonSynMapping();
 	virtual void SlaveNonSynMapping();
+
+	int ComputeKrPolMapping(int i);
+	int ComputeKrPolMapping();
+	int GlobalKrPolMapping();
+	virtual void SlaveKrPolMapping();
 	// primary scheduler
 
 	double Move(double tuning = 1.0)	{

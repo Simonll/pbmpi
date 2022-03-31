@@ -192,6 +192,7 @@ void CodonMutSelSBDPPhyloProcess::ReadPB(int argc, char* argv[])	{
 
 	int cv = 0;
 	int map = 0;
+	int mapstats = 0;
 	string testdatafile = "";
 	int rateprior = 0;
 	int profileprior = 0;
@@ -277,6 +278,9 @@ void CodonMutSelSBDPPhyloProcess::ReadPB(int argc, char* argv[])	{
 			else if (s == "-map")	{
 				map = 1;
 			}
+			else if (s == "-mapstats")	{
+				mapstats = 1;
+			}
 
 			else if (s == "-sitelogl")	{
 				sitelogl = 1;
@@ -340,10 +344,10 @@ void CodonMutSelSBDPPhyloProcess::ReadPB(int argc, char* argv[])	{
 	else if (sel)	{
 		ReadSDistributions(name,burnin,every,until);
 	}
+	*/
 	else if (mapstats)	{
 		ReadMapStats(name,burnin,every,until);
 	}
-	*/
 	else if (ppred)	{
 		PostPred(ppred,name,burnin,every,until,rateprior,profileprior,rootprior,savetrees);
 	}
@@ -839,8 +843,9 @@ void CodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ever
 	ofstream ospvalue((name + ".nonsynpvalue").c_str());
 
 	int samplesize = 0;
-	int pvalue=0;
-	int obs, pred;
+	int pvalue_nonsyn=0;
+	int pvalue_krpol=0;
+	int obs_nonsyn, pred_nonsyn, obs_krpol, pred_krpol;
 	while (i < until)	{
 		cerr << ".";
 		cerr.flush();
@@ -857,9 +862,10 @@ void CodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ever
 		GlobalUpdateSiteProfileSuffStat();
 
 		// write posterior
-		obs = GlobalNonSynMapping();
-		ospost << (double) (obs) / CodonMutSelProfileProcess::GetNsite() << "\n";
-		cerr << (double) (obs) / CodonMutSelProfileProcess::GetNsite() << "\t";
+		obs_nonsyn = GlobalNonSynMapping();
+		obs_krpol  = GlobalKrPolMapping();
+		ospost << (double) (obs_nonsyn) / CodonMutSelProfileProcess::GetNsite() <<  "\t" << (double) (obs_krpol) / CodonMutSelProfileProcess::GetNsite() <<"\n";
+		cerr << (double) (obs_nonsyn) / CodonMutSelProfileProcess::GetNsite()  <<  "\t" << (double) (obs_krpol) / CodonMutSelProfileProcess::GetNsite() << "\t";
 
 		GlobalUnfold();
 
@@ -870,11 +876,13 @@ void CodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ever
 		GlobalSetDataFromLeaves();
 
 		// write posterior predictive
-		pred = GlobalNonSynMapping();
-		ospred << (double) (pred) / CodonMutSelProfileProcess::GetNsite() << "\n";
-		cerr << (double) (pred) / CodonMutSelProfileProcess::GetNsite() << "\n";
+		pred_nonsyn = GlobalNonSynMapping();
+		pred_krpol = GlobalKrPolMapping();
+		ospred << (double) (pred_nonsyn) / CodonMutSelProfileProcess::GetNsite() << "\t" << (double) (pred_krpol) / CodonMutSelProfileProcess::GetNsite() << "\n";
+		cerr << (double) (pred_nonsyn) / CodonMutSelProfileProcess::GetNsite()   << "\t" << (double) (pred_krpol) / CodonMutSelProfileProcess::GetNsite() << "\n";
 	
-		if (pred > obs) pvalue++;
+		if (pred_nonsyn > obs_nonsyn) pvalue_nonsyn++;
+		if (pred_krpol > obs_krpol) pvalue_krpol++;
 
 		GlobalRestoreData();
 		GlobalUnfold();
@@ -886,14 +894,12 @@ void CodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ever
 			nrep++;
 		}
 	}
-
-	ospvalue << (double) (pvalue) / samplesize << "\n";
+	ospvalue << (double) (pvalue_nonsyn) / samplesize << "\t" << (double) (pvalue_krpol) / samplesize << "\n";
 	cerr << '\n';
 }
 
 int CodonMutSelSBDPPhyloProcess::CountNonSynMapping()	{
-
-	int total = 0;	
+	int total = 0;
 	for(int i = sitemin; i < sitemax; i++){
 		//total += CountNonSynMapping(GetRoot(), i);
 		total += CountNonSynMapping(i);
@@ -905,7 +911,12 @@ int CodonMutSelSBDPPhyloProcess::CountNonSynMapping(int i)	{
 	int count = 0;
 	for(int k=0; k<GetGlobalNstate(); ++k) {
 		for(int l=0; l<GetGlobalNstate(); ++l) {
-			count+=sitepaircount[i][pair<int,int>(k,l)];
+			if (k != l){
+				if (!statespace->Synonymous(k, l)){
+					count+=sitepaircount[i][pair<int,int>(k,l)];
+				}
+			}
+			
 		}
 	}
 	return count;
@@ -933,3 +944,51 @@ void CodonMutSelSBDPPhyloProcess::SlaveNonSynMapping()	{
 	MPI_Send(&nonsyn,1,MPI_INT,0,TAG1,MPI_COMM_WORLD);
 
 }
+
+//
+int CodonMutSelSBDPPhyloProcess::ComputeKrPolMapping()	{
+	int count = 0;
+	for(int i = sitemin; i < sitemax; i++){
+		//total += ComputeKrKcPolMapping(GetRoot(), i);
+		count += ComputeKrPolMapping(i);
+
+	}
+	return count;
+}
+
+int CodonMutSelSBDPPhyloProcess::ComputeKrPolMapping(int i)	{
+	int count = 0;
+	for(int k=0; k<GetGlobalNstate(); ++k) {
+		for(int l=0; l<GetGlobalNstate(); ++l) {
+			if (k != l){
+				if (!statespace->ConsPol(k, l)){
+					count+=sitepaircount[i][pair<int,int>(k,l)];
+				}
+			}
+		}
+	}
+	return count;
+}
+
+int CodonMutSelSBDPPhyloProcess::GlobalKrPolMapping()	{
+
+	assert(myid==0);
+	MESSAGE signal = KRKCPOL;
+	MPI_Status stat;
+	MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
+
+	int i, count, totalcount=0;
+	for (i=1; i<nprocs; ++i)	{
+		MPI_Recv(&count,1,MPI_INT,MPI_ANY_SOURCE,TAG1,MPI_COMM_WORLD, &stat);
+		totalcount += count;
+	}
+	return totalcount;
+
+}
+
+void CodonMutSelSBDPPhyloProcess::SlaveKrPolMapping()	{
+	int count = ComputeKrPolMapping();
+	MPI_Send(&count,1,MPI_INT,0,TAG1,MPI_COMM_WORLD);
+
+}
+
