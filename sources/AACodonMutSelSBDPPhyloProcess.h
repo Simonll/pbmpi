@@ -287,7 +287,10 @@ class AACodonMutSelSBDPPhyloProcess : public virtual AACodonMutSelSBDPSubstituti
 	int GlobalNonSynMapping();
 	virtual void SlaveNonSynMapping();
 
-
+	int ComputeKrPolMapping(int i);
+	int ComputeKrPolMapping();
+	int GlobalKrPolMapping();
+	virtual void SlaveKrPolMapping();
 
 	// primary scheduler
 
