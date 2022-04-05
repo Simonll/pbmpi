@@ -838,9 +838,9 @@ void CodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ever
 	}
 
 	
-	ofstream ospost((name + ".nonsynpost").c_str());
-	ofstream ospred((name + ".nonsynpred").c_str());
-	ofstream ospvalue((name + ".nonsynpvalue").c_str());
+	ofstream ospost((name + ".mapstatspost").c_str());
+	ofstream ospred((name + ".mapstatspred").c_str());
+	ofstream ospvalue((name + ".mapstatspvalue").c_str());
 
 	int samplesize = 0;
 	int pvalue_nonsyn=0;
