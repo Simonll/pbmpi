@@ -285,6 +285,12 @@ class AACodonMutSelFinitePhyloProcess : public virtual AACodonMutSelFiniteSubsti
 	int GlobalNonSynMapping();
 	virtual void SlaveNonSynMapping();
 
+	int CountKrPolMapping(int i);
+	int CountKrPolMapping();
+	int GlobalKrPolMapping();
+	virtual void SlaveKrPolMapping();
+
+
 	double Move(double tuning = 1.0)	{
 		chronototal.Start();
 		propchrono.Start();

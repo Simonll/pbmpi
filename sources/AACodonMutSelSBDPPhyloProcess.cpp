@@ -1110,17 +1110,17 @@ void AACodonMutSelSBDPPhyloProcess::SlaveNonSynMapping()	{
 }
 
 //
-int AACodonMutSelSBDPPhyloProcess::ComputeKrPolMapping()	{
+int AACodonMutSelSBDPPhyloProcess::CountKrPolMapping()	{
 	int count = 0;
 	for(int i = sitemin; i < sitemax; i++){
-		//total += ComputeKrKcPolMapping(GetRoot(), i);
-		count += ComputeKrPolMapping(i);
+		//total += CountKrKcPolMapping(GetRoot(), i);
+		count += CountKrPolMapping(i);
 
 	}
 	return count;
 }
 
-int AACodonMutSelSBDPPhyloProcess::ComputeKrPolMapping(int i)	{
+int AACodonMutSelSBDPPhyloProcess::CountKrPolMapping(int i)	{
 	int count = 0;
 	for(int k=0; k<GetGlobalNstate(); ++k) {
 		for(int l=0; l<GetGlobalNstate(); ++l) {
@@ -1151,7 +1151,7 @@ int AACodonMutSelSBDPPhyloProcess::GlobalKrPolMapping()	{
 }
 
 void AACodonMutSelSBDPPhyloProcess::SlaveKrPolMapping()	{
-	int count = ComputeKrPolMapping();
+	int count = CountKrPolMapping();
 	MPI_Send(&count,1,MPI_INT,0,TAG1,MPI_COMM_WORLD);
 
 }
