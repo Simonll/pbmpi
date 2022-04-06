@@ -100,6 +100,11 @@ void AACodonMutSelFinitePhyloProcess::SlaveExecute(MESSAGE signal)	{
 	case PROFILE_MOVE:
 		SlaveMoveProfile();
 		break;
+	case NONSYNMAPPING:
+		SlaveNonSynMapping();
+		break;
+	case KRKCPOLMAPPING:
+		SlaveKrPolMapping();
 	default:
 		PhyloProcess::SlaveExecute(signal);
 	}
@@ -1119,7 +1124,7 @@ int AACodonMutSelFinitePhyloProcess::CountKrPolMapping(int i)	{
 int AACodonMutSelFinitePhyloProcess::GlobalKrPolMapping()	{
 
 	assert(myid==0);
-	MESSAGE signal = KRKCPOL;
+	MESSAGE signal = KRKCPOLMAPPING;
 	MPI_Status stat;
 	MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
 

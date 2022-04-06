@@ -101,6 +101,11 @@ void CodonMutSelSBDPPhyloProcess::SlaveExecute(MESSAGE signal)	{
 	case MIX_MOVE:
 		SlaveMixMove();
 		break;
+	case NONSYNMAPPING:
+		SlaveNonSynMapping();
+		break;
+	case KRKCPOLMAPPING:
+		SlaveKrPolMapping();
 	default:
 		PhyloProcess::SlaveExecute(signal);
 	}
@@ -973,7 +978,7 @@ int CodonMutSelSBDPPhyloProcess::ComputeKrPolMapping(int i)	{
 int CodonMutSelSBDPPhyloProcess::GlobalKrPolMapping()	{
 
 	assert(myid==0);
-	MESSAGE signal = KRKCPOL;
+	MESSAGE signal = KRKCPOLMAPPING;
 	MPI_Status stat;
 	MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
 

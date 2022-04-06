@@ -119,6 +119,8 @@ void AACodonMutSelSBDPPhyloProcess::SlaveExecute(MESSAGE signal)	{
 	case NONSYNMAPPING:
 		SlaveNonSynMapping();
 		break;
+	case KRKCPOLMAPPING:
+		SlaveKrPolMapping();
 	default:
 		PhyloProcess::SlaveExecute(signal);
 	}
@@ -1137,7 +1139,7 @@ int AACodonMutSelSBDPPhyloProcess::CountKrPolMapping(int i)	{
 int AACodonMutSelSBDPPhyloProcess::GlobalKrPolMapping()	{
 
 	assert(myid==0);
-	MESSAGE signal = KRKCPOL;
+	MESSAGE signal = KRKCPOLMAPPING;
 	MPI_Status stat;
 	MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
 
