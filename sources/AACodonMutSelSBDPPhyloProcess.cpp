@@ -1092,23 +1092,24 @@ int AACodonMutSelSBDPPhyloProcess::CountNonSynMapping(int i)	{
 }
 
 int AACodonMutSelSBDPPhyloProcess::GlobalNonSynMapping()	{
-
+	cerr << "GlobalNonSynMapping";
 	assert(myid==0);
 	MESSAGE signal = NONSYNMAPPING;
 	MPI_Status stat;
 	MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
-
+	cerr << "GlobalNonSynMapping1";
 	int i, count, totalcount=0;
 	for (i=1; i<nprocs; ++i)	{
 		MPI_Recv(&count,1,MPI_INT,MPI_ANY_SOURCE,TAG1,MPI_COMM_WORLD, &stat);
 		totalcount += count;
 	}
+	cerr << "GlobalNonSynMapping2";
 	return totalcount;
 
 }
 
 void AACodonMutSelSBDPPhyloProcess::SlaveNonSynMapping()	{
-
+	cerr << "SlaveNonSynMapping";
 	int nonsyn = CountNonSynMapping();
 	MPI_Send(&nonsyn,1,MPI_INT,0,TAG1,MPI_COMM_WORLD);
 
