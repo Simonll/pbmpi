@@ -1068,15 +1068,18 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 }
 
 int AACodonMutSelSBDPPhyloProcess::CountNonSynMapping()	{
+	cerr << "CountNonSynMapping\n";
 	int total = 0;
 	for(int i = sitemin; i < sitemax; i++){
 		//total += CountNonSynMapping(GetRoot(), i);
 		total += CountNonSynMapping(i);
 	}
+	cerr << "CountNonSynMapping1\n";
 	return total;
 }
 
 int AACodonMutSelSBDPPhyloProcess::CountNonSynMapping(int i)	{
+	cerr << "CountNonSynMapping2\n";
 	int count = 0;
 	for(int k=0; k<GetGlobalNstate(); ++k) {
 		for(int l=0; l<GetGlobalNstate(); ++l) {
@@ -1088,6 +1091,7 @@ int AACodonMutSelSBDPPhyloProcess::CountNonSynMapping(int i)	{
 			
 		}
 	}
+	cerr << "CountNonSynMapping3\n";
 	return count;
 }
 
@@ -1112,7 +1116,7 @@ void AACodonMutSelSBDPPhyloProcess::SlaveNonSynMapping()	{
 	cerr << "SlaveNonSynMapping";
 	int nonsyn = CountNonSynMapping();
 	MPI_Send(&nonsyn,1,MPI_INT,0,TAG1,MPI_COMM_WORLD);
-
+	cerr << "SlaveNonSynMapping1";
 }
 
 //
