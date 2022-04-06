@@ -365,8 +365,8 @@ void GeneralPathSuffStatMatrixPhyloProcess::SlaveUpdateSiteProfileSuffStat()	{
 
 
 int GeneralPathSuffStatMatrixPhyloProcess::CountMapping(int i)	{
-	cerr << "in count mapping\n";
-	exit(1);
+	//cerr << "in count mapping\n";
+	//exit(1);
 	int count = 0;
 	for(int k=0; k<GetNstate(i); ++k) {
 		for(int l=0; l<GetNstate(i); ++l) {
