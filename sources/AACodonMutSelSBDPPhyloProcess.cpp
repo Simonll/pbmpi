@@ -1079,21 +1079,17 @@ int AACodonMutSelSBDPPhyloProcess::CountNonSynMapping()	{
 }
 
 int AACodonMutSelSBDPPhyloProcess::CountNonSynMapping(int i)	{
-	cerr << "CountNonSynMapping2\n";
 	int count = 0;
 	for(int k=0; k<GetGlobalNstate(); ++k) {
 		for(int l=0; l<GetGlobalNstate(); ++l) {
 			if (k != l){
-				cerr << "CountNonSynMapping2.0\n";
 				if (!AACodonMutSelProfileProcess::statespace->Synonymous(k, l)){
-					cerr << "CountNonSynMapping2.1\n";
 					count+=sitepaircount[i][pair<int,int>(k,l)];
 				}
 			}
 			
 		}
 	}
-	cerr << "CountNonSynMapping3\n";
 	return count;
 }
 
@@ -1138,6 +1134,7 @@ int AACodonMutSelSBDPPhyloProcess::CountKrPolMapping(int i)	{
 		for(int l=0; l<GetGlobalNstate(); ++l) {
 			if (k != l){
 				cerr << "CountKrPolMapping2.0\n";
+				cerr << k << " " << l << "\n";
 				if (!AACodonMutSelSBDPPhyloProcess::statespace->ConsPol(k, l)){
 					count+=sitepaircount[i][pair<int,int>(k,l)];
 				}
