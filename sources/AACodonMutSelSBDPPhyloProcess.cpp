@@ -1142,7 +1142,6 @@ int AACodonMutSelSBDPPhyloProcess::CountKrPolMapping(int i)	{
 			}
 		}
 	}
-	cerr << "CountKrPolMapping2.1\n";
 	return count;
 }
 
