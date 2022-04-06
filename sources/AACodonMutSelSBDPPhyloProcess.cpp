@@ -1135,7 +1135,8 @@ int AACodonMutSelSBDPPhyloProcess::CountKrPolMapping(int i)	{
 			if (k != l){
 				cerr << "CountKrPolMapping2.0\n";
 				cerr << k << " " << l << "\n";
-				if (!AACodonMutSelSBDPPhyloProcess::statespace->Synonymous(k, l)){
+				if (!AACodonMutSelSBDPPhyloProcess::statespace->ConsPol(k, l)){
+					cerr << "CountKrPolMapping2.01\n";
 					count+=sitepaircount[i][pair<int,int>(k,l)];
 				}
 			}
