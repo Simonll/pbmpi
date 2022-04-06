@@ -1137,12 +1137,14 @@ int AACodonMutSelSBDPPhyloProcess::CountKrPolMapping(int i)	{
 	for(int k=0; k<GetGlobalNstate(); ++k) {
 		for(int l=0; l<GetGlobalNstate(); ++l) {
 			if (k != l){
+				cerr << "CountKrPolMapping2.0\n";
 				if (!AACodonMutSelSBDPPhyloProcess::statespace->ConsPol(k, l)){
 					count+=sitepaircount[i][pair<int,int>(k,l)];
 				}
 			}
 		}
 	}
+	cerr << "CountKrPolMapping2.1\n";
 	return count;
 }
 
