@@ -119,9 +119,10 @@ void AACodonMutSelSBDPPhyloProcess::SlaveExecute(MESSAGE signal)	{
 	case NONSYNMAPPING:
 		SlaveNonSynMapping();
 		break;
-	case KRKCPOLMAPPING:
+	case KRPOLMAPPING:
 		SlaveKrPolMapping();
 	default:
+		cerr << 
 		PhyloProcess::SlaveExecute(signal);
 	}
 }
@@ -1119,12 +1120,13 @@ void AACodonMutSelSBDPPhyloProcess::SlaveNonSynMapping()	{
 
 //
 int AACodonMutSelSBDPPhyloProcess::CountKrPolMapping()	{
+	cerr << "CountKrPolMapping1\n";
 	int count = 0;
 	for(int i = sitemin; i < sitemax; i++){
 		//total += CountKrKcPolMapping(GetRoot(), i);
 		count += CountKrPolMapping(i);
-
 	}
+	cerr << "CountKrPolMapping2\n";
 	return count;
 }
 
@@ -1133,10 +1135,7 @@ int AACodonMutSelSBDPPhyloProcess::CountKrPolMapping(int i)	{
 	for(int k=0; k<GetGlobalNstate(); ++k) {
 		for(int l=0; l<GetGlobalNstate(); ++l) {
 			if (k != l){
-				cerr << "CountKrPolMapping2.0\n";
-				cerr << k << " " << l << "\n";
 				if (!AACodonMutSelProfileProcess::statespace->ConsPol(k, l)){
-					cerr << "CountKrPolMapping2.01\n";
 					count+=sitepaircount[i][pair<int,int>(k,l)];
 				}
 			}
@@ -1149,7 +1148,7 @@ int AACodonMutSelSBDPPhyloProcess::CountKrPolMapping(int i)	{
 int AACodonMutSelSBDPPhyloProcess::GlobalKrPolMapping()	{
 
 	assert(myid==0);
-	MESSAGE signal = KRKCPOLMAPPING;
+	MESSAGE signal = KRPOLMAPPING;
 	MPI_Status stat;
 	MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
 
@@ -1163,8 +1162,10 @@ int AACodonMutSelSBDPPhyloProcess::GlobalKrPolMapping()	{
 }
 
 void AACodonMutSelSBDPPhyloProcess::SlaveKrPolMapping()	{
+	cerr << "CountKrPolMapping1\n";
 	int count = CountKrPolMapping();
 	MPI_Send(&count,1,MPI_INT,0,TAG1,MPI_COMM_WORLD);
+	cerr << "CountKrPolMapping2\n";
 
 }
 
