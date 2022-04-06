@@ -1084,6 +1084,7 @@ int AACodonMutSelSBDPPhyloProcess::CountNonSynMapping(int i)	{
 	for(int k=0; k<GetGlobalNstate(); ++k) {
 		for(int l=0; l<GetGlobalNstate(); ++l) {
 			if (k != l){
+				cerr << "CountNonSynMapping2.0\n";
 				if (!statespace->Synonymous(k, l)){
 					cerr << "CountNonSynMapping2.1\n";
 					count+=sitepaircount[i][pair<int,int>(k,l)];
