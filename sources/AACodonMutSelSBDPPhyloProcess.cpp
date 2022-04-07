@@ -1036,12 +1036,12 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		cerr << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite()  <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\t";
 		
 		GlobalUnfold();
-		GlobalUnclamp();
 		
 		//Posterior Prededictive Mappings
 		GlobalUpdateConditionalLikelihoods();
+		GlobalUnclamp();
 		GlobalCollapse();
-		//GlobalSetDataFromLeaves();
+		GlobalSetDataFromLeaves();
 		GlobalUpdateSiteProfileSuffStat();
 		
 		
