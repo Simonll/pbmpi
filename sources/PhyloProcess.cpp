@@ -59,6 +59,7 @@ void PhyloProcess::Collapse()	{
 		if (profileprior)	{
 			DrawProfileFromPrior();
 		}
+		cerr << "check1\n";
 		SimulateForward();
 	}
 	DeleteCondSiteLogL();
