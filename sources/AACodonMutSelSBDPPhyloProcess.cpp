@@ -1037,10 +1037,10 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		
 		
 		
-		// GlobalUnfold();
-		GlobalUpdateConditionalLikelihoods();
+		GlobalUnfold();
 		GlobalUnclamp();
 		GlobalCollapse();
+		
 		GlobalSetDataFromLeaves();
 		GlobalUpdateSiteProfileSuffStat();
 		
