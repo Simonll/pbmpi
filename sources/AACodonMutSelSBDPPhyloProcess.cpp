@@ -1030,14 +1030,11 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		
 		// write posterior ancestral node states
 		GlobalSetNodeStates();
-		
+		GlobalUpdateSiteProfileSuffStat();
 		obs_nonsyn = GlobalNonSynMapping();
 		obs_krpol  = GlobalKrPolMapping();
 		ospost << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite() <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() <<"\n";
 		cerr << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite()  <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\t";
-
-		if (pred_nonsyn > obs_nonsyn) pvalue_nonsyn++;
-		if (pred_krpol > obs_krpol) pvalue_krpol++;
 
 		//Posterior Predictive Mappings
 		GlobalUnfold();
@@ -1048,7 +1045,7 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 	
 		// write posterior predictive ancestral node states
 		GlobalSetNodeStates();
-		
+		GlobalUpdateSiteProfileSuffStat();
 		pred_nonsyn = GlobalNonSynMapping();
 		pred_krpol = GlobalKrPolMapping();
 		ospred << (double) (pred_nonsyn) / AACodonMutSelProfileProcess::GetNsite() << "\t" << (double) (pred_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\n";
