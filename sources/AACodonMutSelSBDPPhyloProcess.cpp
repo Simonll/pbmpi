@@ -1025,37 +1025,35 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		MESSAGE signal = BCAST_TREE;
 		MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
 		GlobalBroadcastTree();
-
-		// GlobalUpdateConditionalLikelihoods();
-		// GlobalCollapse();
-		// GlobalUpdateSiteProfileSuffStat();
-		// // write posterior
-		// obs_nonsyn = GlobalNonSynMapping();
-		// obs_krpol  = GlobalKrPolMapping();
-		// ospost << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite() <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() <<"\n";
-		// cerr << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite()  <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\t";
-		
-		
-		
-		GlobalUnfold();
-		GlobalUnclamp();
+		GlobalUpdateConditionalLikelihoods();
 		GlobalCollapse();
 		
-		GlobalSetDataFromLeaves();
-		GlobalUpdateSiteProfileSuffStat();
+		// write posterior ancestral node states
+		GlobalSetNodeStates();
 		
-		
-		// // write posterior predictive
-		//pred_nonsyn = GlobalNonSynMapping();
-		//pred_krpol = GlobalKrPolMapping();
-		// ospred << (double) (pred_nonsyn) / AACodonMutSelProfileProcess::GetNsite() << "\t" << (double) (pred_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\n";
-		// cerr << (double) (pred_nonsyn) / AACodonMutSelProfileProcess::GetNsite()   << "\t" << (double) (pred_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\n";
-	
 		obs_nonsyn = GlobalNonSynMapping();
 		obs_krpol  = GlobalKrPolMapping();
 		ospost << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite() <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() <<"\n";
 		cerr << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite()  <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\t";
 
+		if (pred_nonsyn > obs_nonsyn) pvalue_nonsyn++;
+		if (pred_krpol > obs_krpol) pvalue_krpol++;
+
+		//Posterior Predictive Mappings
+		GlobalUnfold();
+		GlobalUnclamp();
+		GlobalCollapse();
+
+		GlobalSetDataFromLeaves();
+	
+		// write posterior predictive ancestral node states
+		GlobalSetNodeStates();
+		
+		pred_nonsyn = GlobalNonSynMapping();
+		pred_krpol = GlobalKrPolMapping();
+		ospred << (double) (pred_nonsyn) / AACodonMutSelProfileProcess::GetNsite() << "\t" << (double) (pred_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\n";
+		cerr << (double) (pred_nonsyn) / AACodonMutSelProfileProcess::GetNsite()   << "\t" << (double) (pred_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\n";
+	
 		if (pred_nonsyn > obs_nonsyn) pvalue_nonsyn++;
 		if (pred_krpol > obs_krpol) pvalue_krpol++;
 
