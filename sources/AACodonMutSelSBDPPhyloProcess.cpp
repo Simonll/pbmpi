@@ -1029,7 +1029,6 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		GlobalCollapse();
 		
 		// write posterior ancestral node states
-		GlobalSetNodeStates();
 		GlobalUpdateSiteProfileSuffStat();
 		obs_nonsyn = GlobalNonSynMapping();
 		obs_krpol  = GlobalKrPolMapping();
@@ -1044,7 +1043,6 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		GlobalSetDataFromLeaves();
 	
 		// write posterior predictive ancestral node states
-		GlobalSetNodeStates();
 		GlobalUpdateSiteProfileSuffStat();
 		pred_nonsyn = GlobalNonSynMapping();
 		pred_krpol = GlobalKrPolMapping();
