@@ -123,7 +123,6 @@ void AACodonMutSelSBDPPhyloProcess::SlaveExecute(MESSAGE signal)	{
 		SlaveKrPolMapping();
 		break;
 	default:
-		cerr << signal << "\n";
 		PhyloProcess::SlaveExecute(signal);
 	}
 }
