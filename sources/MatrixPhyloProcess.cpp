@@ -80,6 +80,7 @@ void MatrixPhyloProcess::Collapse()	{
 		if (profileprior)	{
 			DrawProfileFromPrior();
 		}
+		cerr << "check2\n";
 		SimulateForward();
 	}
 	DeleteCondSiteLogL();

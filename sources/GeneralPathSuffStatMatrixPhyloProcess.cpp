@@ -63,6 +63,7 @@ void GeneralPathSuffStatMatrixPhyloProcess::Collapse()	{
 		if (profileprior)	{
 			DrawProfileFromPrior();
 		}
+		cerr << "check4\n";
 		SimulateForward();
 	}
 	DeleteCondSiteLogL();

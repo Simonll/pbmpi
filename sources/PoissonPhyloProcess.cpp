@@ -63,6 +63,7 @@ void PoissonPhyloProcess::Collapse()	{
 		if (profileprior)	{
 			DrawProfileFromPrior();
 		}
+		cerr << "check3\n";
 		SimulateForward();
 	}
 	DeleteCondSiteLogL();
