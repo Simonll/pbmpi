@@ -1034,16 +1034,14 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		obs_krpol  = GlobalKrPolMapping();
 		ospost << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite() <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() <<"\n";
 		cerr << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite()  <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\t";
-		GlobalUnclamp();
-		GlobalRestoreData();
+		
+		
+		
 		GlobalUnfold();
-		//MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
-		//GlobalBroadcastTree();
-		// //Posterior Prededictive Mappings
-		GlobalUpdateConditionalLikelihoods();
 		GlobalUnclamp();
 		GlobalCollapse();
-		// // GlobalSetDataFromLeaves();
+
+		GlobalSetDataFromLeaves();
 		GlobalUpdateSiteProfileSuffStat();
 		
 		
