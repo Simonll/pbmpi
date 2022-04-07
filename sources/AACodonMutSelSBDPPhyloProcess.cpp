@@ -1041,7 +1041,7 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		//GlobalBroadcastTree();
 		// //Posterior Prededictive Mappings
 		GlobalUpdateConditionalLikelihoods();
-		// GlobalUnclamp();
+		GlobalUnclamp();
 		GlobalCollapse();
 		// // GlobalSetDataFromLeaves();
 		GlobalUpdateSiteProfileSuffStat();
