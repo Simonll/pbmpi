@@ -1020,35 +1020,29 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		samplesize++;
 		FromStream(is);
 		i++;
-		cerr << "mapstats1\n";
 		MESSAGE signal = BCAST_TREE;
 		MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
 		GlobalBroadcastTree();
 		GlobalUpdateConditionalLikelihoods();
 		GlobalCollapse();
-		cerr << "mapstats2\n";
 		GlobalUpdateSiteProfileSuffStat();
-		cerr << "mapstats3\n";
 		// write posterior
 		obs_nonsyn = GlobalNonSynMapping();
-		cerr << "mapstats4\n";
 		obs_krpol  = GlobalKrPolMapping();
 		ospost << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite() <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() <<"\n";
 		cerr << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite()  <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\t";
-		cerr << "mapstats5\n";
-		GlobalUnfold();
-		cerr << "mapstats6\n";
+		
 		//Posterior Prededictive Mappings
+		GlobalUnfold();
 		GlobalUnclamp();
 		GlobalCollapse();
-		GlobalUpdateSiteProfileSuffStat();
+		
 		GlobalSetDataFromLeaves();
-		cerr << "mapstats7\n";
+		GlobalUpdateSiteProfileSuffStat();
+		
 		// write posterior predictive
 		pred_nonsyn = GlobalNonSynMapping();
-		cerr << "mapstats8\n";
 		pred_krpol = GlobalKrPolMapping();
-		cerr << "mapstats9\n";
 		ospred << (double) (pred_nonsyn) / AACodonMutSelProfileProcess::GetNsite() << "\t" << (double) (pred_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\n";
 		cerr << (double) (pred_nonsyn) / AACodonMutSelProfileProcess::GetNsite()   << "\t" << (double) (pred_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\n";
 	
@@ -1070,13 +1064,11 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 }
 
 int AACodonMutSelSBDPPhyloProcess::CountNonSynMapping()	{
-	cerr << "CountNonSynMapping\n";
 	int total = 0;
 	for(int i = sitemin; i < sitemax; i++){
 		//total += CountNonSynMapping(GetRoot(), i);
 		total += CountNonSynMapping(i);
 	}
-	cerr << "CountNonSynMapping1\n";
 	return total;
 }
 
@@ -1096,38 +1088,31 @@ int AACodonMutSelSBDPPhyloProcess::CountNonSynMapping(int i)	{
 }
 
 int AACodonMutSelSBDPPhyloProcess::GlobalNonSynMapping()	{
-	cerr << "GlobalNonSynMapping\n";
 	assert(myid==0);
 	MESSAGE signal = NONSYNMAPPING;
 	MPI_Status stat;
 	MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
-	cerr << "GlobalNonSynMapping1\n";
 	int i, count, totalcount=0;
 	for (i=1; i<nprocs; ++i)	{
 		MPI_Recv(&count,1,MPI_INT,MPI_ANY_SOURCE,TAG1,MPI_COMM_WORLD, &stat);
 		totalcount += count;
 	}
-	cerr << "GlobalNonSynMapping2\n";
 	return totalcount;
 
 }
 
 void AACodonMutSelSBDPPhyloProcess::SlaveNonSynMapping()	{
-	cerr << "SlaveNonSynMapping\n";
 	int nonsyn = CountNonSynMapping();
 	MPI_Send(&nonsyn,1,MPI_INT,0,TAG1,MPI_COMM_WORLD);
-	cerr << "SlaveNonSynMapping1\n";
 }
 
 //
 int AACodonMutSelSBDPPhyloProcess::CountKrPolMapping()	{
-	cerr << "CountKrPolMapping1\n";
 	int count = 0;
 	for(int i = sitemin; i < sitemax; i++){
 		//total += CountKrKcPolMapping(GetRoot(), i);
 		count += CountKrPolMapping(i);
 	}
-	cerr << "CountKrPolMapping2\n";
 	return count;
 }
 
@@ -1162,11 +1147,6 @@ int AACodonMutSelSBDPPhyloProcess::GlobalKrPolMapping()	{
 }
 
 void AACodonMutSelSBDPPhyloProcess::SlaveKrPolMapping()	{
-	cerr << "CountKrPolMapping1\n";
 	int count = CountKrPolMapping();
 	MPI_Send(&count,1,MPI_INT,0,TAG1,MPI_COMM_WORLD);
-	cerr << "CountKrPolMapping2\n";
-
 }
-
-
