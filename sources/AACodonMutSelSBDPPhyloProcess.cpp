@@ -1012,7 +1012,10 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 	int samplesize = 0;
 	int pvalue_nonsyn=0;
 	int pvalue_krpol=0;
-	int obs_nonsyn, pred_nonsyn, obs_krpol, pred_krpol;
+	int obs_nonsyn = 0;
+	int pred_nonsyn = 0;
+	int obs_krpol = 0;
+	int pred_krpol = 0;
 	while (i < until)	{
 		cerr << ".";
 		cerr.flush();
@@ -1035,9 +1038,9 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		GlobalUnfold();
 		GlobalUnclamp();
 		GlobalCollapse();
-		
+		// GlobalUpdateSiteProfileSuffStat();
 		GlobalSetDataFromLeaves();
-		GlobalUpdateSiteProfileSuffStat();
+		
 		
 		// write posterior predictive
 		pred_nonsyn = GlobalNonSynMapping();
