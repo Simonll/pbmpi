@@ -1028,7 +1028,7 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		
 		GlobalUpdateConditionalLikelihoods();
 		GlobalCollapse();
-		GlobalUpdateSiteProfileSuffStat();
+		//GlobalUpdateSiteProfileSuffStat();
 		// write posterior
 		obs_nonsyn = GlobalNonSynMapping();
 		obs_krpol  = GlobalKrPolMapping();
@@ -1040,7 +1040,7 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		
 		//Posterior Prededictive Mappings
 		GlobalCollapse();
-		GlobalUpdateSiteProfileSuffStat();
+		//GlobalUpdateSiteProfileSuffStat();
 		GlobalSetDataFromLeaves();
 		
 		
