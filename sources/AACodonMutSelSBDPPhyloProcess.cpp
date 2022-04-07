@@ -1035,6 +1035,11 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		ospost << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite() <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() <<"\n";
 		cerr << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite()  <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\t";
 
+
+		cerr << "GlobalCountMapping obs: " << GlobalCountMapping() << "\n";
+
+
+
 		//Posterior Predictive Mappings
 		GlobalUnfold();
 		GlobalUnclamp();
@@ -1049,6 +1054,9 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		ospred << (double) (pred_nonsyn) / AACodonMutSelProfileProcess::GetNsite() << "\t" << (double) (pred_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\n";
 		cerr << (double) (pred_nonsyn) / AACodonMutSelProfileProcess::GetNsite()   << "\t" << (double) (pred_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\n";
 	
+		cerr << "GlobalCountMapping pred: " << GlobalCountMapping() << "\n";
+
+
 		if (pred_nonsyn > obs_nonsyn) pvalue_nonsyn++;
 		if (pred_krpol > obs_krpol) pvalue_krpol++;
 
