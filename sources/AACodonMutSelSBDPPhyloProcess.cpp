@@ -1038,7 +1038,6 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 
 		cerr << "GlobalCountMapping obs: " << GlobalCountMapping() << "\n";
 
-		GlobalRestoreData();
 		GlobalUnfold();
 
 		//Posterior Predictive Mappings
