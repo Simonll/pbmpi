@@ -1041,7 +1041,7 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 
 
 		//Posterior Predictive Mappings
-		GlobalUnfold();
+		//GlobalUnfold();
 		GlobalUnclamp();
 		GlobalUpdateConditionalLikelihoods();
 		GlobalCollapse();
