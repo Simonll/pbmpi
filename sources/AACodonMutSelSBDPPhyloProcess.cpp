@@ -1038,7 +1038,8 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 
 		cerr << "GlobalCountMapping obs: " << GlobalCountMapping() << "\n";
 
-
+		GlobalRestoreData();
+		GlobalUnfold();
 
 		//Posterior Predictive Mappings
 		MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
