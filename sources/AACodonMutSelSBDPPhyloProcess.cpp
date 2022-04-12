@@ -1043,9 +1043,10 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		//Posterior Predictive Mappings
 		MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
 		GlobalBroadcastTree();
+		cerr << "cc1\n";
 		GlobalUnclamp();
 		
-		
+		cerr << "cc2\n";
 		DrawAllocations();
 		if (rateprior)	{
 			DrawAllocationsFromPrior();
@@ -1053,9 +1054,10 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		if (profileprior)	{
 			DrawProfileFromPrior();
 		}
+		cerr << "cc3\n";
 		GlobalSimulateForward();
 		GlobalSetDataFromLeaves();
-	
+		cerr << "cc4\n";
 		// FillMissingMap();
 		SampleSubstitutionMappings(GetRoot());
 		CreateSuffStat();
