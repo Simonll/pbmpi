@@ -1023,8 +1023,8 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		FromStream(is);
 		i++;
 		MESSAGE signal = BCAST_TREE;
-		// MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
-		// GlobalBroadcastTree();
+		MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
+		GlobalBroadcastTree();
 		// GlobalUpdateConditionalLikelihoods();
 		// GlobalCollapse();
 		
@@ -1041,8 +1041,8 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		// GlobalUnfold();
 
 		//Posterior Predictive Mappings
-		MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
-		GlobalBroadcastTree();
+		// MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
+		// GlobalBroadcastTree();
 		cerr << "cc1\n";
 		GlobalUnclamp();
 		
