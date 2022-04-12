@@ -1044,11 +1044,22 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
 		GlobalBroadcastTree();
 		GlobalUnclamp();
-		GlobalCollapse();
+		
+		
+		DrawAllocations();
+		if (rateprior)	{
+			DrawAllocationsFromPrior();
+		}
+		if (profileprior)	{
+			DrawProfileFromPrior();
+		}
 		GlobalSimulateForward();
 		GlobalSetDataFromLeaves();
-		
 	
+		// FillMissingMap();
+		SampleSubstitutionMappings(GetRoot());
+		CreateSuffStat();
+		
 		// write posterior predictive ancestral node states
 		GlobalUpdateSiteProfileSuffStat();
 		pred_nonsyn = GlobalNonSynMapping();
