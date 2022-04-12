@@ -1043,14 +1043,11 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		//Posterior Predictive Mappings
 		MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
 		GlobalBroadcastTree();
-		GlobalUpdateConditionalLikelihoods();
-		GlobalCollapse();
-		GlobalUnfold();
 		GlobalUnclamp();
 		GlobalCollapse();
+		GlobalSimulateForward();
 		GlobalSetDataFromLeaves();
-		GlobalSetNodeStates();
-
+		
 	
 		// write posterior predictive ancestral node states
 		GlobalUpdateSiteProfileSuffStat();
