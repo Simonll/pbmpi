@@ -1018,9 +1018,11 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 	int pred_krpol = 0;
 	while (i < until)	{
 		cerr << ".";
+		cerr << "CC0\n";
 		cerr.flush();
 		samplesize++;
 		FromStream(is);
+		cerr << "CC0\n";
 		i++;
 		MESSAGE signal = BCAST_TREE;
 		MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
