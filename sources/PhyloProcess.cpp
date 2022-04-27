@@ -3160,7 +3160,7 @@ int PhyloProcess::CountMapping()	{
 }
 
 int PhyloProcess::CountMapping(int i)	{
-	//cerr << "PHYLOPORCESS\n";
+	cerr << "PHYLOPORCESS\n";
 	return 0;
 }
 

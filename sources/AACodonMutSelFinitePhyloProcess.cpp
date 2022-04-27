@@ -975,7 +975,8 @@ void AACodonMutSelFinitePhyloProcess::Read(string name, int burnin, int every, i
 }
 
 void AACodonMutSelFinitePhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
-  	ifstream is((name + ".chain").c_str());
+  	cerr << "CodonMutSelSBDPPhyloProcess::ReadMapStats\n";
+	ifstream is((name + ".chain").c_str());
 	if (!is)	{
 		cerr << "error: no .chain file found\n";
 		exit(1);

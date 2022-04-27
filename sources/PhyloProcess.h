@@ -299,6 +299,8 @@ class PhyloProcess : public virtual SubstitutionProcess, public virtual BranchPr
 	void ReadSiteRates(string name, int burnin, int every, int until);
 
 	// The following methids are here to write the mappings.
+	virtual void ReadMapStats(string name, int burnin, int every, int until);
+
 	void ReadMap(string name, int burnin, int every, int until);
 	void ReadPostPredMap(string name, int burnin, int every, int until);
 	void GlobalWriteMappings(string name);
