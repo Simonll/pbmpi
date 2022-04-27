@@ -1972,6 +1972,10 @@ void PhyloProcess::SlaveBroadcastTree()	{
 	delete[] bvector;
 }
 
+void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
+	cerr << "in PhyloProcess::ReadMapStats\n";
+	exit(1);
+}
 
 void PhyloProcess::ReadPB(int argc, char* argv[])	{
 
