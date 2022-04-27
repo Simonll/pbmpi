@@ -1025,45 +1025,27 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int ev
 		MESSAGE signal = BCAST_TREE;
 		MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
 		GlobalBroadcastTree();
-		// GlobalUpdateConditionalLikelihoods();
-		// GlobalCollapse();
+		GlobalUpdateConditionalLikelihoods();
+		GlobalCollapse();
 		
-		// // write posterior ancestral node states
-		// GlobalUpdateSiteProfileSuffStat();
-		// obs_nonsyn = GlobalNonSynMapping();
-		// obs_krpol  = GlobalKrPolMapping();
-		// ospost << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite() <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() <<"\n";
-		// cerr << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite()  <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\t";
+		// write posterior ancestral node states
+		GlobalUpdateSiteProfileSuffStat();
+		obs_nonsyn = GlobalNonSynMapping();
+		obs_krpol  = GlobalKrPolMapping();
+		ospost << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite() <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() <<"\n";
+		cerr << (double) (obs_nonsyn) / AACodonMutSelProfileProcess::GetNsite()  <<  "\t" << (double) (obs_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\t";
 
 
-		// cerr << "GlobalCountMapping obs: " << GlobalCountMapping() << "\n";
+		cerr << "GlobalCountMapping obs: " << GlobalCountMapping() << "\n";
 
-		// GlobalUnfold();
+		GlobalUnfold();
 
 		//Posterior Predictive Mappings
-		// MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
-		// GlobalBroadcastTree();
-		cerr << "cc1\n";
 		GlobalUnclamp();
-		
-		cerr << "cc2\n";
-		DrawAllocations();
-		if (rateprior)	{
-			DrawAllocationsFromPrior();
-		}
-		if (profileprior)	{
-			DrawProfileFromPrior();
-		}
-		cerr << "cc3\n";
-		GlobalSimulateForward();
-		GlobalSetDataFromLeaves();
-		cerr << "cc4\n";
-		// FillMissingMap();
-		SampleSubstitutionMappings(GetRoot());
-		CreateSuffStat();
-		
-		// write posterior predictive ancestral node states
+		GlobalCollapse();
 		GlobalUpdateSiteProfileSuffStat();
+		GlobalSetDataFromLeaves();
+		
 		pred_nonsyn = GlobalNonSynMapping();
 		pred_krpol = GlobalKrPolMapping();
 		ospred << (double) (pred_nonsyn) / AACodonMutSelProfileProcess::GetNsite() << "\t" << (double) (pred_krpol) / AACodonMutSelProfileProcess::GetNsite() << "\n";
