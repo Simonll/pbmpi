@@ -362,6 +362,11 @@ void PoissonPhyloProcess::SlaveWriteMappings(){
 	PhyloProcess::SlaveWriteMappings();
 }
 
+void PoissonPhyloProcess::SlaveWriteSuffStat(){
+	SampleTrueNodeStates(GetRoot());
+	RecursiveUnzipBranchSitePath(GetRoot());
+	PhyloProcess::SlaveWriteSuffStat();
+}
 
 void PoissonPhyloProcess::SampleTrueNodeStates(const Link* from)	{
 	
