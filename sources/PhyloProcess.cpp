@@ -3713,8 +3713,8 @@ void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i){
 		map<int,double> branchwaitingtime;
 		BranchSitePath* mybsp = submap[GetBranchIndex(from->GetBranch())][i];
 		double l = GetLength(from->GetBranch());
-		int state_from = mybsp->Last()->GetState();
-		for(Plink* plink = mybsp->Last(); plink ; plink = plink->Prev()){
+		int state_from = mybsp->Init()->GetState();
+		for(Plink* plink = mybsp->Init()->Next(); plink ; plink = plink->Next()){
 			double t  = plink->GetRelativeTime() * l;
 			branchwaitingtime[state_from]+= t; 
 			int state_to = plink->GetState();
@@ -3762,20 +3762,20 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
 
 			double l = GetLength(from->GetBranch());
 			
-			int state_from = mybsp_a->Last()->GetState();
+			int state_from = mybsp_a->Init()->GetState();
 			double time = 0.0;
 			map_.push_back(std::tuple<double,int,int>(time,state_from,0));
-			for(Plink* plink = mybsp_a->Last(); plink ; plink = plink->Prev()){
+			for(Plink* plink = mybsp_a->Init()->Next(); plink ; plink = plink->Next()){
 				double t  = plink->GetRelativeTime() * l;
 				time += t;
 				int state_to = plink->GetState();
 				map_.push_back(std::tuple<double,int,int>(time,state_to,0));
 			}
 			
-			state_from = mybsp_b->Last()->GetState();
+			state_from = mybsp_b->Init()->GetState();
 			time = 0.0;
 			map_.push_back(std::tuple<double,int,int>(time,state_from,1));
-			for(Plink* plink = mybsp_a->Last(); plink ; plink = plink->Prev()){
+			for(Plink* plink = mybsp_a->Init()->Next(); plink ; plink = plink->Next()){
 				double t  = plink->GetRelativeTime() * l;
 				time += t;
 				int state_to = plink->GetState();
