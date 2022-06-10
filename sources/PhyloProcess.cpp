@@ -3439,30 +3439,30 @@ void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
 	}
 
 
-	for(int i = 0; i < GetNsite(); i++){
-		stringstream osfmap;
-		osfmap << name << '_' << i << ".suffdistatmap";
-		ofstream osmap((osfmap.str()).c_str());
-		osmap << "branchID";
-		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
-			for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
-				osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l);
-			}
-		}
-		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
-			for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
-				for(int m = 0; m < GetStateSpace()->GetNstate(); m++){
-					for(int n = 0; n < GetStateSpace()->GetNstate(); n++){
-						if (std::pair<int,int>(k,l) != std::pair<int,int>(m,n) ){
-							osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l)<<">"<<GetStateSpace()->GetState(m)<<GetStateSpace()->GetState(n);
-						}
-					}
-				}
-			}
-		}
-		osmap << "\n";
-		osmap.close();
-	}
+	// for(int i = 0; i < GetNsite(); i++){
+	// 	stringstream osfmap;
+	// 	osfmap << name << '_' << i << ".suffdistatmap";
+	// 	ofstream osmap((osfmap.str()).c_str());
+	// 	osmap << "branchID";
+	// 	for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
+	// 		for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
+	// 			osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l);
+	// 		}
+	// 	}
+	// 	for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
+	// 		for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
+	// 			for(int m = 0; m < GetStateSpace()->GetNstate(); m++){
+	// 				for(int n = 0; n < GetStateSpace()->GetNstate(); n++){
+	// 					if (std::pair<int,int>(k,l) != std::pair<int,int>(m,n) ){
+	// 						osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l)<<">"<<GetStateSpace()->GetState(m)<<GetStateSpace()->GetState(n);
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// 	osmap << "\n";
+	// 	osmap.close();
+	// }
 	while (i < until)	{
 		cerr << ".";
 		// cerr << i << '\t' << rnd::GetRandom().Uniform() << '\n';
@@ -3494,14 +3494,14 @@ void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
 			osmap.close();
 		}
 
-		GlobalWriteSuffDiStat(name);
-		for(int i = 0; i < GetNsite()-1; i++){
-			stringstream osfmap;
-			osfmap << name << '_' << i << ".suffdistatmap";
-			ofstream osmap((osfmap.str()).c_str(), ios_base::app);
-			osmap << '\n';
-			osmap.close();
-		}
+		// GlobalWriteSuffDiStat(name);
+		// for(int i = 0; i < GetNsite()-1; i++){
+		// 	stringstream osfmap;
+		// 	osfmap << name << '_' << i << ".suffdistatmap";
+		// 	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
+		// 	osmap << '\n';
+		// 	osmap.close();
+		// }
 
 		// write posterior ancestral node states
 		// GlobalSetNodeStates();
@@ -3527,14 +3527,14 @@ void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
 			osmap.close();
 		}
 
-		GlobalWriteSuffDiStat(name);
-		for(int i = 0; i < GetNsite()-1; i++){
-			stringstream osfmap;
-			osfmap << name << '_' << i << ".suffdistatmap";
-			ofstream osmap((osfmap.str()).c_str(), ios_base::app);
-			osmap << '\n';
-			osmap.close();
-		}
+		// GlobalWriteSuffDiStat(name);
+		// for(int i = 0; i < GetNsite()-1; i++){
+		// 	stringstream osfmap;
+		// 	osfmap << name << '_' << i << ".suffdistatmap";
+		// 	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
+		// 	osmap << '\n';
+		// 	osmap.close();
+		// }
 
 		// GlobalWriteMappings(name);
 
