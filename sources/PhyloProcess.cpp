@@ -3812,18 +3812,20 @@ void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i){
 		Plink* link=mybsp->Init();
 		int state_from = link->GetState();
 		double rel_time = 1.0;
+		double dt = rel_time * l;
 		if (link != mybsp->Last()){
 			while (link!=mybsp->Last())	{
 				Plink* next = link->Next();
 				int state_to = next->GetState();
-				rel_time = next->GetRelativeTime();
 				branchpaircount[pair<int,int>(state_from, state_to)]++;
-				branchwaitingtime[state_from] += rel_time * l;
+				rel_time = next->GetRelativeTime();
+				dt = rel_time * l;
+				branchwaitingtime[state_from] += dt;
 				link = next;
 				state_from = state_to;
 			}
 		} else {
-			branchwaitingtime[state_from] += rel_time * l;
+			branchwaitingtime[state_from] += dt;
 		}
 		
 		// double t  = mybsp->Init()->GetRelativeTime() * l;
@@ -3878,13 +3880,15 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
 			Plink* link=mybsp_a->Init();
 			int state_from = link->GetState();
 			double rel_time = 1.0;
+			double dt = rel_time * l;
 			map_.push_back(std::tuple<double,int,int>(0,state_from,0));
 			if (link != mybsp_a->Last()){
 				while (link!=mybsp_a->Last())	{
 					Plink* next = link->Next();
 					int state_to = next->GetState();
 					rel_time = next->GetRelativeTime();
-					map_.push_back(std::tuple<double,int,int>(rel_time * l,state_from,0));
+					dt = rel_time *l;
+					map_.push_back(std::tuple<double,int,int>(dt,state_from,0));
 					link = next;
 					state_from = state_to;
 				}
@@ -3896,18 +3900,20 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
 			link=mybsp_b->Init();
 			state_from = link->GetState();
 			rel_time = 1.0;
+			dt = rel_time * l;
 			map_.push_back(std::tuple<double,int,int>(0,state_from,1));
 			if (link != mybsp_b->Last()){
 				while (link!=mybsp_b->Last())	{
 					Plink* next = link->Next();
 					int state_to = next->GetState();
 					rel_time = next->GetRelativeTime();
-					map_.push_back(std::tuple<double,int,int>(rel_time * l,state_from,1));
+					dt = rel_time *l;
+					map_.push_back(std::tuple<double,int,int>(dt,state_from,1));
 					link = next;
 					state_from = state_to;
 				}
 			} else {
-				map_.push_back(std::tuple<double,int,int>(rel_time * l,state_from,1));
+				map_.push_back(std::tuple<double,int,int>(dt,state_from,1));
 			
 			}
 			
