@@ -336,6 +336,9 @@ void RASCATFiniteGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 			else if (s == "-mapstats")	{
 				mapstats = 1;
 			}
+			else if (s == "-mapdistats")	{
+				mapstats = 2;
+			}
 			else if (s == "-jointcv")	{
 				cv = 1;
 				i++;
@@ -422,8 +425,11 @@ void RASCATFiniteGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 	else if (map)	{
 		ReadMap(name,burnin,every,until);
 	}
-	else if (mapstats)	{
+	else if (mapstats == 1)	{
 		ReadMapStats(name,burnin,every,until);
+	}
+	else if (mapstats == 2)	{
+		ReadMapDiStats(name,burnin,every,until);
 	}
     else if (posthyper) {
 		ReadPostHyper(name,burnin,every,until);

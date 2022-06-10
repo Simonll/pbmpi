@@ -446,7 +446,9 @@ void AACodonMutSelFinitePhyloProcess::ReadPB(int argc, char* argv[])	{
 			else if (s == "-mapstats")	{
 				mapstats = 1;
 			}
-
+			else if (s == "-mapdistats")	{
+				mapstats = 2;
+			}
 			else if (s == "-sitelogl")	{
 				sitelogl = 1;
 			}
@@ -514,8 +516,11 @@ void AACodonMutSelFinitePhyloProcess::ReadPB(int argc, char* argv[])	{
 	//else if (sel)	{
 	//	ReadSDistributions(name,burnin,every,until);
 	//}
-	else if (mapstats)	{
+	else if (mapstats == 1)	{
 		ReadMapStats(name,burnin,every,until);
+	}
+	else if (mapstats == 2)	{
+		ReadMapDiStats(name,burnin,every,until);
 	}
 	else if (ppred)	{
 		PostPred(ppred,name,burnin,every,until,rateprior,profileprior,rootprior,savetrees);

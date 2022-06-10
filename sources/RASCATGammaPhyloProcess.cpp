@@ -297,6 +297,9 @@ void RASCATGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 			else if (s == "-mapstats")	{
 				mapstats = 1;
 			}
+			else if (s == "-mapdistats")	{
+				mapstats = 2;
+			}
 			else if (s == "-sitelogl")	{
 				sitelogl = 1;
 			}
@@ -385,8 +388,11 @@ void RASCATGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 	else if (map)	{
 		ReadMap(name,burnin,every,until);
 	}
-	else if (mapstats)	{
+	else if (mapstats == 1)	{
 		ReadMapStats(name,burnin,every,until);
+	}
+	else if (mapstats == 2)	{
+		ReadMapDiStats(name,burnin,every,until);
 	}
 	else if (cv == 1)	{
         GlobalSetSiteLogLCutoff();

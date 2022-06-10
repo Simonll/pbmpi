@@ -291,6 +291,9 @@ void CodonMutSelSBDPPhyloProcess::ReadPB(int argc, char* argv[])	{
 			else if (s == "-mapstats")	{
 				mapstats = 1;
 			}
+			else if (s == "-mapdistats")	{
+				mapstats = 2;
+			}
 			else if (s == "-sitelogl")	{
 				sitelogl = 1;
 			}

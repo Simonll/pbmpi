@@ -309,13 +309,16 @@ void RASCATGTRSBDPGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 			else if (s == "-mapstats")	{
 				mapstats = 1;
 			}
+			else if (s == "-mapdistats")	{
+				mapstats = 2;
+			}
 			else if (s == "-jointcv")	{
 				cv = 1;
 				i++;
 				testdatafile = argv[i];
 			}
 
-			else if (s == "-sitecv")	{
+			else if (s== "-sitecv")	{
 				cv = 2;
 				i++;
 				testdatafile = argv[i];
@@ -437,7 +440,7 @@ void RASCATGTRSBDPGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 	else if (map)	{
 		ReadMap(name,burnin,every,until);
 	}
-	else if (mapstats)	{
+	else if (mapstats == 1)	{
 		ReadMapStats(name,burnin,every,until);
 	}
 	else	{

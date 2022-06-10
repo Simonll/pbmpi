@@ -370,6 +370,7 @@ class PhyloProcess : public virtual SubstitutionProcess, public virtual BranchPr
 	void WriteTreeMapping(ostream& os, const Link* from, int i);
 
 	void ReadMapStats(string name, int burnin, int every, int until);
+	void ReadMapDiStats(string name, int burnin, int every, int until);
 	void GlobalWriteSuffStat(string name);
 	void GlobalWriteSuffDiStat(string name);
 	virtual void SlaveWriteSuffStat();
