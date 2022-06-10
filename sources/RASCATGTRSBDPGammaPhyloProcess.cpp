@@ -443,6 +443,9 @@ void RASCATGTRSBDPGammaPhyloProcess::ReadPB(int argc, char* argv[])	{
 	else if (mapstats == 1)	{
 		ReadMapStats(name,burnin,every,until);
 	}
+	else if (mapstats == 2)	{
+		ReadMapDiStats(name,burnin,every,until);
+	}
 	else	{
 		Read(name,burnin,every,until);
 	}

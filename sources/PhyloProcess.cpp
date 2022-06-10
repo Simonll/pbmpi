@@ -3438,31 +3438,6 @@ void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
 		osmap.close();
 	}
 
-
-	// for(int i = 0; i < GetNsite(); i++){
-	// 	stringstream osfmap;
-	// 	osfmap << name << '_' << i << ".suffdistatmap";
-	// 	ofstream osmap((osfmap.str()).c_str());
-	// 	osmap << "branchID";
-	// 	for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
-	// 		for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
-	// 			osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l);
-	// 		}
-	// 	}
-	// 	for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
-	// 		for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
-	// 			for(int m = 0; m < GetStateSpace()->GetNstate(); m++){
-	// 				for(int n = 0; n < GetStateSpace()->GetNstate(); n++){
-	// 					if (std::pair<int,int>(k,l) != std::pair<int,int>(m,n) ){
-	// 						osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l)<<">"<<GetStateSpace()->GetState(m)<<GetStateSpace()->GetState(n);
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// 	osmap << "\n";
-	// 	osmap.close();
-	// }
 	while (i < until)	{
 		cerr << ".";
 		// cerr << i << '\t' << rnd::GetRandom().Uniform() << '\n';
@@ -3494,15 +3469,7 @@ void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
 			osmap.close();
 		}
 
-		// GlobalWriteSuffDiStat(name);
-		// for(int i = 0; i < GetNsite()-1; i++){
-		// 	stringstream osfmap;
-		// 	osfmap << name << '_' << i << ".suffdistatmap";
-		// 	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
-		// 	osmap << '\n';
-		// 	osmap.close();
-		// }
-
+	
 		// write posterior ancestral node states
 		// GlobalSetNodeStates();
 		// WriteNodeStates(sos,GetRoot());
@@ -3526,15 +3493,6 @@ void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
 			osmap << '\n';
 			osmap.close();
 		}
-
-		// GlobalWriteSuffDiStat(name);
-		// for(int i = 0; i < GetNsite()-1; i++){
-		// 	stringstream osfmap;
-		// 	osfmap << name << '_' << i << ".suffdistatmap";
-		// 	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
-		// 	osmap << '\n';
-		// 	osmap.close();
-		// }
 
 		// GlobalWriteMappings(name);
 
@@ -3849,15 +3807,34 @@ void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i){
 		map< pair<int,int>, int> branchpaircount; 
 		map<int,double> branchwaitingtime;
 		BranchSitePath* mybsp = submap[GetBranchIndex(from->GetBranch())][i];
+		
 		double l = GetLength(from->GetBranch());
-		int state_from = mybsp->Init()->GetState();
-		for(Plink* plink = mybsp->Init()->Next(); plink ; plink = plink->Next()){
-			double t  = plink->GetRelativeTime() * l;
-			branchwaitingtime[state_from]+= t; 
-			int state_to = plink->GetState();
-			branchpaircount[pair<int,int>(state_from, state_to)]++;
-			state_from = state_to;
+		Plink* link=mybsp->Init();
+		int state_from = link->GetState();
+		double rel_time = 1.0;
+		if (link != mybsp->Last()){
+			while (link!=mybsp->Last())	{
+				Plink* next = link->Next();
+				int state_to = next->GetState();
+				rel_time = next->GetRelativeTime();
+				branchpaircount[pair<int,int>(state_from, state_to)]++;
+				branchwaitingtime[state_from] += rel_time * l;
+				link = next;
+				state_from = state_to;
+			}
+		} else {
+			branchwaitingtime[state_from] += rel_time * l;
 		}
+		
+		// double t  = mybsp->Init()->GetRelativeTime() * l;
+		// branchwaitingtime[state_from]+= t;
+		// for(Plink* plink = mybsp->Init()->Next(); plink ; plink = plink->Next()){
+		// 	t  = plink->GetRelativeTime() * l;
+		// 	int state_to = plink->GetState();
+		// 	branchwaitingtime[state_to]+= t; 
+		// 	branchpaircount[pair<int,int>(state_from, state_to)]++;
+		// 	state_from = state_to;
+		// }
 		
 		os << GetBranchIndex(from->GetBranch());
 		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
