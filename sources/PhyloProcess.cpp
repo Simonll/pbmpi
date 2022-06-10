@@ -3875,27 +3875,42 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
 			
 
 			double l = GetLength(from->GetBranch());
+			Plink* link=mybsp_a->Init();
+			int state_from = link->GetState();
+			double rel_time = 1.0;
+			map_.push_back(std::tuple<double,int,int>(0,state_from,0));
+			if (link != mybsp_a->Last()){
+				while (link!=mybsp_a->Last())	{
+					Plink* next = link->Next();
+					int state_to = next->GetState();
+					rel_time = next->GetRelativeTime();
+					map_.push_back(std::tuple<double,int,int>(rel_time * l,state_from,0));
+					link = next;
+					state_from = state_to;
+				}
+			} else {
+				map_.push_back(std::tuple<double,int,int>(rel_time * l,state_from,0));
 			
-			int state_from = mybsp_a->Init()->GetState();
-			double time = 0.0;
-			map_.push_back(std::tuple<double,int,int>(time,state_from,0));
-			for(Plink* plink = mybsp_a->Init()->Next(); plink ; plink = plink->Next()){
-				double t  = plink->GetRelativeTime() * l;
-				time += t;
-				int state_to = plink->GetState();
-				map_.push_back(std::tuple<double,int,int>(time,state_to,0));
-			}
-			
-			state_from = mybsp_b->Init()->GetState();
-			time = 0.0;
-			map_.push_back(std::tuple<double,int,int>(time,state_from,1));
-			for(Plink* plink = mybsp_a->Init()->Next(); plink ; plink = plink->Next()){
-				double t  = plink->GetRelativeTime() * l;
-				time += t;
-				int state_to = plink->GetState();
-				map_.push_back(std::tuple<double,int,int>(time,state_to,1));
 			}
 
+			link=mybsp_b->Init();
+			state_from = link->GetState();
+			rel_time = 1.0;
+			map_.push_back(std::tuple<double,int,int>(0,state_from,1));
+			if (link != mybsp_b->Last()){
+				while (link!=mybsp_b->Last())	{
+					Plink* next = link->Next();
+					int state_to = next->GetState();
+					rel_time = next->GetRelativeTime();
+					map_.push_back(std::tuple<double,int,int>(rel_time * l,state_from,1));
+					link = next;
+					state_from = state_to;
+				}
+			} else {
+				map_.push_back(std::tuple<double,int,int>(rel_time * l,state_from,1));
+			
+			}
+			
 			sort(map_.begin(), map_.end());
 
 			map<std::tuple<std::pair<int,int>,std::pair<int,int>>, int> branchpaircount; 
