@@ -3555,22 +3555,25 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 		osfmap << name << '_' << i << ".suffdistatmap";
 		ofstream osmap((osfmap.str()).c_str());
 		osmap << "branchID";
-		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
-			for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
-				osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l);
-			}
-		}
-		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
-			for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
-				for(int m = 0; m < GetStateSpace()->GetNstate(); m++){
-					for(int n = 0; n < GetStateSpace()->GetNstate(); n++){
-						if (std::pair<int,int>(k,l) != std::pair<int,int>(m,n) ){
-							osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l)<<">"<<GetStateSpace()->GetState(m)<<GetStateSpace()->GetState(n);
-						}
-					}
-				}
-			}
-		}
+		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2);
+		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2)<<">"<<GetStateSpace()->GetState(3)<<GetStateSpace()->GetState(2);
+		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2)<<">"<<GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(0);
+		// for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
+		// 	for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
+		// 		osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l);
+		// 	}
+		// }
+		// for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
+		// 	for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
+		// 		for(int m = 0; m < GetStateSpace()->GetNstate(); m++){
+		// 			for(int n = 0; n < GetStateSpace()->GetNstate(); n++){
+		// 				if (std::pair<int,int>(k,l) != std::pair<int,int>(m,n) ){
+		// 					osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l)<<">"<<GetStateSpace()->GetState(m)<<GetStateSpace()->GetState(n);
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
 		osmap << "\n";
 		osmap.close();
 	}
@@ -3828,16 +3831,6 @@ void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i){
 			branchwaitingtime[state_from] += dt;
 		}
 		
-		// double t  = mybsp->Init()->GetRelativeTime() * l;
-		// branchwaitingtime[state_from]+= t;
-		// for(Plink* plink = mybsp->Init()->Next(); plink ; plink = plink->Next()){
-		// 	t  = plink->GetRelativeTime() * l;
-		// 	int state_to = plink->GetState();
-		// 	branchwaitingtime[state_to]+= t; 
-		// 	branchpaircount[pair<int,int>(state_from, state_to)]++;
-		// 	state_from = state_to;
-		// }
-		
 		os << GetBranchIndex(from->GetBranch());
 		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
 			os << "\t" << branchwaitingtime[k];
@@ -3940,22 +3933,26 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
 			}
 
 			os << GetBranchIndex(from->GetBranch());
-			for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
-				for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
-					os << "\t" << branchwaitingtime[pair<int,int>(k, l)];
-				}
-			}
-			for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
-				for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
-					for(int m = 0; m < GetStateSpace()->GetNstate(); m++){
-						for(int n = 0; n < GetStateSpace()->GetNstate(); n++){
-							if (pair<int,int>(k, l) != pair<int,int>(m, n) ){
-								os << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(k,l),std::pair<int,int>(m,n))];
-							}
-						}
-					}
-				}	
-			}
+			
+			os << "\t" << branchwaitingtime[pair<int,int>(1, 2)];
+			os << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(1,2),std::pair<int,int>(3,2))];
+			os << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(1,2),std::pair<int,int>(1,0))];
+			// for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
+			// 	for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
+			// 		os << "\t" << branchwaitingtime[pair<int,int>(k, l)];
+			// 	}
+			// }
+			// for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
+			// 	for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
+			// 		for(int m = 0; m < GetStateSpace()->GetNstate(); m++){
+			// 			for(int n = 0; n < GetStateSpace()->GetNstate(); n++){
+			// 				if (pair<int,int>(k, l) != pair<int,int>(m, n) ){
+			// 					os << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(k,l),std::pair<int,int>(m,n))];
+			// 				}
+			// 			}
+			// 		}
+			// 	}	
+			// }
 			os << "\n";
 		}
 	}
