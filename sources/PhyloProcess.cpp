@@ -3818,20 +3818,22 @@ void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i){
 		Plink* link=mybsp->Init();
 		int state_from = link->GetState();
 		double rel_time = 1.0;
-		double dt = rel_time * l;
+		double clock_start = 0;
+		double clock_end = rel_time * l;
 		if (link != mybsp->Last()){
 			while (link!=mybsp->Last())	{
 				Plink* next = link->Next();
 				int state_to = next->GetState();
 				branchpaircount[pair<int,int>(state_from, state_to)]++;
 				rel_time = next->GetRelativeTime();
-				dt = rel_time * l;
-				branchwaitingtime[state_from] += dt;
+				clock_end = rel_time * l;
+				branchwaitingtime[state_from] += clock_end - clock_start;
 				link = next;
 				state_from = state_to;
+				clock_start = clock_end;
 			}
 		} else {
-			branchwaitingtime[state_from] += dt;
+			branchwaitingtime[state_from] += clock_end - clock_start;
 		}
 		
 		os << GetBranchIndex(from->GetBranch());
@@ -3876,40 +3878,45 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
 			Plink* link=mybsp_a->Init();
 			int state_from = link->GetState();
 			double rel_time = 1.0;
-			double dt = rel_time * l;
+			double clock_start = 0;
+			double clock_end = rel_time * l;
 			map_.push_back(std::tuple<double,int,int>(0,state_from,0));
 			if (link != mybsp_a->Last()){
 				while (link!=mybsp_a->Last())	{
 					Plink* next = link->Next();
 					int state_to = next->GetState();
 					rel_time = next->GetRelativeTime();
-					dt = rel_time *l;
-					map_.push_back(std::tuple<double,int,int>(dt,state_from,0));
+					clock_end = rel_time * l;
+					map_.push_back(std::tuple<double,int,int>(clock_end,state_from,0));
 					link = next;
 					state_from = state_to;
+					clock_start = clock_end;
 				}
 			} else {
-				map_.push_back(std::tuple<double,int,int>(rel_time * l,state_from,0));
+				map_.push_back(std::tuple<double,int,int>(clock_end,state_from,0));
 			
 			}
 
 			link=mybsp_b->Init();
 			state_from = link->GetState();
 			rel_time = 1.0;
-			dt = rel_time * l;
+			clock_start = 0;
+			clock_end = rel_time * l;
 			map_.push_back(std::tuple<double,int,int>(0,state_from,1));
 			if (link != mybsp_b->Last()){
 				while (link!=mybsp_b->Last())	{
 					Plink* next = link->Next();
 					int state_to = next->GetState();
 					rel_time = next->GetRelativeTime();
-					dt = rel_time *l;
-					map_.push_back(std::tuple<double,int,int>(dt,state_from,1));
+					clock_end = rel_time * l;
+					map_.push_back(std::tuple<double,int,int>(clock_end,state_from,1));
 					link = next;
 					state_from = state_to;
+					clock_start = clock_end;
+
 				}
 			} else {
-				map_.push_back(std::tuple<double,int,int>(dt,state_from,1));
+				map_.push_back(std::tuple<double,int,int>(clock_end,state_from,1));
 			
 			}
 			
@@ -3918,23 +3925,48 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
 			map<std::tuple<std::pair<int,int>,std::pair<int,int>>, int> branchpaircount; 
 			map<std::pair<int,int>,double> branchwaitingtime;
 
-			int state_a  = (get<2>(map_[0]) == 0) ? get<1>(map_[0]) :  get<1>(map_[1]);
-			int state_b  = (get<2>(map_[0]) == 1) ? get<1>(map_[0]) :  get<1>(map_[1]);
+			int state_a = -1; 
+			int state_b = -1;  
 
-			for (unsigned long i = 1; i < map_.size(); i++){
-				int new_state  = get<1>(map_[i]);
-				int new_pos  = get<2>(map_[i]);
-				branchwaitingtime[std::pair<int,int>(state_a,state_b)]+= get<0>(map_[i]);
-				if (new_pos == 0){
-					branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(state_a,state_b),std::pair<int,int>(new_state,state_b))]++;
-					state_a = new_state;
-				} else {
-					branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(state_a,state_b),std::pair<int,int>(state_a,new_state))]++;
-					state_b = new_state;
-				}
-				
+			if (get<2>(map_[0]) == 0) {
+				state_a = get<1>(map_[0]);
+			} else if (get<2>(map_[0]) == 1) {
+				state_b = get<1>(map_[0]);
+			} 
+
+			if (get<2>(map_[1]) == 0) {
+				state_a = get<1>(map_[1]);
+			} else if (get<2>(map_[1]) == 1) {
+				state_b = get<1>(map_[1]);
+			} 
+
+			if (state_a == -1 || state_b == -1){
+				cerr << "Something wrong with states assignation\n";
+				exit(1);
+
+
 			}
-
+			clock_start = 0;
+			if (map_.size() > 2){
+				for (unsigned long i = 2; i < map_.size(); i++){
+					int new_state  = get<1>(map_[i]);
+					int new_pos  = get<2>(map_[i]);
+					clock_end = get<0>(map_[i]);
+					if (clock_end <= clock_start){
+						cerr << "Something wrong with timing of substitutions\n";
+					}
+					branchwaitingtime[std::pair<int,int>(state_a,state_b)]+= clock_end - clock_start;
+					clock_start = clock_end;
+					if (new_pos == 0){
+						branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(state_a,state_b),std::pair<int,int>(new_state,state_b))]++;
+						state_a = new_state;
+					} else if (new_pos == 1) {
+						branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(state_a,state_b),std::pair<int,int>(state_a,new_state))]++;
+						state_b = new_state;
+					}
+					
+				}
+			}
 			os << GetBranchIndex(from->GetBranch());
 			
 			os << "\t" << branchwaitingtime[pair<int,int>(1, 2)];
