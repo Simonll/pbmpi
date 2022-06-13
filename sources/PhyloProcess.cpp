@@ -3556,8 +3556,11 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 		ofstream osmap((osfmap.str()).c_str());
 		osmap << "branchID";
 		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2);
+		osmap<< "\t" << GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(1);
 		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2)<<">"<<GetStateSpace()->GetState(3)<<GetStateSpace()->GetState(2);
 		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2)<<">"<<GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(0);
+		osmap<< "\t" << GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(1)<<">"<<GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(3);
+		osmap<< "\t" << GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(1)<<">"<<GetStateSpace()->GetState(0)<<GetStateSpace()->GetState(1);
 		// for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
 		// 	for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
 		// 		osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l);
@@ -3935,8 +3938,11 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
 			os << GetBranchIndex(from->GetBranch());
 			
 			os << "\t" << branchwaitingtime[pair<int,int>(1, 2)];
+			os << "\t" << branchwaitingtime[pair<int,int>(2, 1)];
 			os << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(1,2),std::pair<int,int>(3,2))];
 			os << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(1,2),std::pair<int,int>(1,0))];
+			os << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(2,1),std::pair<int,int>(2,3))];
+			os << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(2,1),std::pair<int,int>(0,1))];
 			// for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
 			// 	for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
 			// 		os << "\t" << branchwaitingtime[pair<int,int>(k, l)];
