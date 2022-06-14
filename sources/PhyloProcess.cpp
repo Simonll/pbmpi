@@ -56,7 +56,7 @@ string PhyloProcess::GetType(){
 		if (type == 0) {
 			return "post";
 		}
-		else if (type == 1){
+		else {
 			return "pred";
 		}
 		
