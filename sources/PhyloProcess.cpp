@@ -3794,7 +3794,7 @@ void PhyloProcess::SlaveWriteSuffDiStat(){
 			stringstream osfmap;
 			osfmap << name << '_' << i << ".suffdistatmap";
 			ofstream osmap((osfmap.str()).c_str(), ios_base::app);
-			WriteSuffDiStat(osmap, GetRoot(), i);
+			WriteSuffDiStat(osmap, GetRoot(), i, iter);
 			osmap.close();
 		}
 	}
@@ -3856,7 +3856,7 @@ void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i){
 
 
 
-void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
+void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int iter){
 	
 	if(i < GetNsite()-1){
 	
@@ -3864,7 +3864,7 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
 		}
 		else{
 			for (const Link* link=from->Next(); link!=from; link=link->Next()){
-				WriteSuffDiStat(os, link->Out(), i);
+				WriteSuffDiStat(os, link->Out(), i, iter);
 			}
 		}
 		if(from->isRoot()){
