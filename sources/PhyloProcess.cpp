@@ -3406,10 +3406,10 @@ void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
 	}
 	cerr << "burnin : " << burnin << "\n";
 	cerr << "until : " << until << '\n';
-	int i=0;
-	while ((i < until) && (i < burnin))	{
+	iter=0;
+	while ((iter < until) && (iter < burnin))	{
 		FromStream(is);
-		i++;
+		iter++;
 	}
 	int samplesize = 0;
 
@@ -3423,7 +3423,8 @@ void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
 		stringstream osfmap;
 		osfmap << name << '_' << i << ".suffstatmap";
 		ofstream osmap((osfmap.str()).c_str());
-		osmap << "branchID";
+		osmap << "mcmcID";
+		osmap << "\t" << "branchID";
 		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
 			osmap<< "\t" << GetStateSpace()->GetState(k);
 		}
@@ -3438,14 +3439,14 @@ void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
 		osmap.close();
 	}
 
-	while (i < until)	{
+	while (iter < until)	{
 		cerr << ".";
 		// cerr << i << '\t' << rnd::GetRandom().Uniform() << '\n';
 
 		cerr.flush();
 		samplesize++;
 		FromStream(is);
-		i++;
+		iter++;
 
 		// prepare file for ancestral node states
 		// ostringstream s;
@@ -3514,9 +3515,9 @@ void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
 
 		
 		int nrep = 1;
-		while ((i<until) && (nrep < every))	{
+		while ((iter<until) && (nrep < every))	{
 			FromStream(is);
-			i++;
+			iter++;
 			nrep++;
 		}
 	}
@@ -3537,10 +3538,10 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 	}
 	cerr << "burnin : " << burnin << "\n";
 	cerr << "until : " << until << '\n';
-	int i=0;
-	while ((i < until) && (i < burnin))	{
+	iter=0;
+	while ((iter < until) && (iter < burnin))	{
 		FromStream(is);
-		i++;
+		iter++;
 	}
 	int samplesize = 0;
 
@@ -3554,7 +3555,8 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 		stringstream osfmap;
 		osfmap << name << '_' << i << ".suffdistatmap";
 		ofstream osmap((osfmap.str()).c_str());
-		osmap << "branchID";
+		osmap<< "mcmcID";
+		osmap<< "\t" <<"branchID";
 		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2);
 		osmap<< "\t" << GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(1);
 		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2)<<">"<<GetStateSpace()->GetState(3)<<GetStateSpace()->GetState(2);
@@ -3580,14 +3582,14 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 		osmap << "\n";
 		osmap.close();
 	}
-	while (i < until)	{
+	while (iter < until)	{
 		cerr << ".";
 		// cerr << i << '\t' << rnd::GetRandom().Uniform() << '\n';
 
 		cerr.flush();
 		samplesize++;
 		FromStream(is);
-		i++;
+		iter++;
 
 		// prepare file for ancestral node states
 		// ostringstream s;
@@ -3657,9 +3659,9 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 
 		
 		int nrep = 1;
-		while ((i<until) && (nrep < every))	{
+		while ((iter<until) && (nrep < every))	{
 			FromStream(is);
-			i++;
+			iter++;
 			nrep++;
 		}
 	}
@@ -3807,7 +3809,7 @@ void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i){
 		}
 	}
 	if(from->isRoot()){
-		os << "\n";   
+		// os << "\n";   
 	}
 	else{
 		map< pair<int,int>, int> branchpaircount; 
@@ -3835,8 +3837,8 @@ void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i){
 		} else {
 			branchwaitingtime[state_from] += clock_end - clock_start;
 		}
-		
-		os << GetBranchIndex(from->GetBranch());
+		os << iter;
+		os <<  "\t" << GetBranchIndex(from->GetBranch());
 		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
 			os << "\t" << branchwaitingtime[k];
 		}
@@ -3866,7 +3868,7 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
 			}
 		}
 		if(from->isRoot()){
-			os << "\n";   
+			// os << "\n";   
 		}
 		else{
 			BranchSitePath* mybsp_a = submap[GetBranchIndex(from->GetBranch())][i];
@@ -3967,7 +3969,8 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
 					
 				}
 			}
-			os << GetBranchIndex(from->GetBranch());
+			os << iter;
+			os << "\t" << GetBranchIndex(from->GetBranch());
 			
 			os << "\t" << branchwaitingtime[pair<int,int>(1, 2)];
 			os << "\t" << branchwaitingtime[pair<int,int>(2, 1)];

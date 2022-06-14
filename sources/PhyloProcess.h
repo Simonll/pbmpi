@@ -684,6 +684,7 @@ class PhyloProcess : public virtual SubstitutionProcess, public virtual BranchPr
 	int NSPR;
 	int NNNI;
 	int dc;
+	int iter;
 
 };
 
