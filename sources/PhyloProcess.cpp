@@ -4006,9 +4006,10 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int ite
 					int new_state  = get<1>(map_[i]);
 					int new_pos  = get<2>(map_[i]);
 					clock_end = get<0>(map_[i]);
-					if (clock_end <= clock_start){
+					if (clock_end < clock_start){
 						cerr << "Something wrong with timing of substitutions\n";
-						cerr << new_state << "\t" << new_pos << "\t" << state_a << "\t" << state_b << "\t" << clock_start << "\t" << clock_end << "\n";						exit(1);
+						cerr << new_state << "\t" << new_pos << "\t" << state_a << "\t" << state_b << "\t" << clock_start << "\t" << clock_end << "\n";
+						exit(1);
 					}
 					branchwaitingtime[std::pair<int,int>(state_a,state_b)]+= clock_end - clock_start;
 					clock_start = clock_end;
