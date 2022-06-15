@@ -3872,7 +3872,7 @@ void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i, int iter,
 				int state_to = next->GetState();
 				branchpaircount[pair<int,int>(state_from, state_to)]++;
 				rel_time = next->GetRelativeTime();
-				clock_end = rel_time * l;
+				clock_end = clock_start + rel_time * l;
 				branchwaitingtime[state_from] += clock_end - clock_start;
 				link = next;
 				state_from = state_to;
@@ -3936,7 +3936,7 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int ite
 					Plink* next = link->Next();
 					int state_to = next->GetState();
 					rel_time = next->GetRelativeTime();
-					clock_end = rel_time * l;
+					clock_end = clock_start + rel_time * l;
 					map_.push_back(std::tuple<double,int,int>(clock_end,state_from,0));
 					link = next;
 					state_from = state_to;
@@ -3958,7 +3958,7 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int ite
 					Plink* next = link->Next();
 					int state_to = next->GetState();
 					rel_time = next->GetRelativeTime();
-					clock_end = rel_time * l;
+					clock_end = clock_start + rel_time * l;
 					map_.push_back(std::tuple<double,int,int>(clock_end,state_from,1));
 					link = next;
 					state_from = state_to;
@@ -4004,6 +4004,7 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int ite
 					clock_end = get<0>(map_[i]);
 					if (clock_end <= clock_start){
 						cerr << "Something wrong with timing of substitutions\n";
+						exit(1);
 					}
 					branchwaitingtime[std::pair<int,int>(state_a,state_b)]+= clock_end - clock_start;
 					clock_start = clock_end;
@@ -4022,7 +4023,6 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int ite
 			} else {
 				os << iter << "\t" << "pred" ;
 			}
-			
 			os << "\t" << GetBranchIndex(from->GetBranch());
 			os << "\t" << branchwaitingtime[pair<int,int>(1, 2)];
 			os << "\t" << branchwaitingtime[pair<int,int>(2, 1)];
