@@ -378,11 +378,11 @@ class PhyloProcess : public virtual SubstitutionProcess, public virtual BranchPr
 	string GetType();
 	void SwitchType();
 	void GlobalWriteSuffStat(string name);
-	void GlobalWriteSuffDiStat(string name);
+	void GlobalWriteSuffDiStat(string name, int iter, int type);
 	virtual void SlaveWriteSuffStat();
 	virtual void SlaveWriteSuffDiStat();
 	void WriteSuffStat(ostream& os, const Link* from, int i);
-	void WriteSuffDiStat(ostream& os, const Link* from, int i);
+	void WriteSuffDiStat(ostream& os, const Link* from, int i, int iter, int type);
 	void WriteTreeBranchName(ostream& os, const Link* from);
 	
 
