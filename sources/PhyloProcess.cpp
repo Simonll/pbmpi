@@ -3930,7 +3930,7 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int ite
 			double rel_time = 1.0;
 			double clock_start = 0;
 			double clock_end = rel_time * l;
-			map_.push_back(std::tuple<double,int,int>(0,state_from,0));
+			map_.push_back(std::tuple<double,int,int>(clock_start,state_from,0));
 			if (link != mybsp_a->Last()){
 				while (link!=mybsp_a->Last())	{
 					Plink* next = link->Next();
@@ -3952,7 +3952,7 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int ite
 			rel_time = 1.0;
 			clock_start = 0;
 			clock_end = rel_time * l;
-			map_.push_back(std::tuple<double,int,int>(0,state_from,1));
+			map_.push_back(std::tuple<double,int,int>(clock_start,state_from,1));
 			if (link != mybsp_b->Last()){
 				while (link!=mybsp_b->Last())	{
 					Plink* next = link->Next();
@@ -3971,6 +3971,11 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int ite
 			}
 			
 			sort(map_.begin(), map_.end());
+
+			if (get<0>(map_[0]) !=0 && get<0>(map_[1]) !=0){
+				cerr << "Something wrong with sorting\n";
+				exit(1);
+			}
 
 			map<std::tuple<std::pair<int,int>,std::pair<int,int>>, int> branchpaircount; 
 			map<std::pair<int,int>,double> branchwaitingtime;
@@ -3993,9 +3998,8 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int ite
 			if (state_a == -1 || state_b == -1){
 				cerr << "Something wrong with states assignation\n";
 				exit(1);
-
-
 			}
+
 			clock_start = 0;
 			if (map_.size() > 2){
 				for (unsigned long i = 2; i < map_.size(); i++){
@@ -4004,7 +4008,7 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int ite
 					clock_end = get<0>(map_[i]);
 					if (clock_end <= clock_start){
 						cerr << "Something wrong with timing of substitutions\n";
-						exit(1);
+						cerr << new_state << "\t" << new_pos << "\t" << state_a << "\t" << state_b << "\t" << clock_start << "\t" << clock_end << "\n";						exit(1);
 					}
 					branchwaitingtime[std::pair<int,int>(state_a,state_b)]+= clock_end - clock_start;
 					clock_start = clock_end;
@@ -4017,6 +4021,13 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int ite
 					}
 					
 				}
+			} else {
+				if (get<0>(map_[0]) != get<0>(map_[1])){
+					cerr << "Something wrong when no subsitutions\n";
+					exit(1);
+				}
+				clock_end = get<0>(map_[0]);
+				branchwaitingtime[std::pair<int,int>(state_a,state_b)]+= clock_end - clock_start;
 			}
 			if (type == 0){
 				os << iter << "\t" << "post" ;
