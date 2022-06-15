@@ -3567,7 +3567,7 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 	cerr << "burnin : " << burnin << "\n";
 	cerr << "until : " << until << '\n';
 	
-	while ((GetIter() < until) && (iter < burnin))	{
+	while ((GetIter() < until) && (GetIter() < burnin))	{
 		FromStream(is);
 		IncrementIter();
 	}
@@ -3633,16 +3633,16 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 		GlobalCollapse();
 
 		// write posterior mappings
-		
+		for(int i = 0; i < GetNsite()-1; i++){
+			stringstream osfmap;
+			osfmap << name << '_' << i << ".suffdistatmap";
+			ofstream osmap((osfmap.str()).c_str(), ios_base::app);
+			osmap << GetIter() << "\t" << GetType();
+			osmap.close();
+		}
 		GlobalWriteSuffDiStat(name);
 		SwitchType();
-		// for(int i = 0; i < GetNsite()-1; i++){
-		// 	stringstream osfmap;
-		// 	osfmap << name << '_' << i << ".suffdistatmap";
-		// 	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
-		// 	osmap << '\n';
-		// 	osmap.close();
-		// }
+		
 
 		// write posterior ancestral node states
 		// GlobalSetNodeStates();
@@ -3659,16 +3659,16 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 		GlobalSetDataFromLeaves();
 
 		// write posterior predictive mappings
-
+		for(int i = 0; i < GetNsite()-1; i++){
+			stringstream osfmap;
+			osfmap << name << '_' << i << ".suffdistatmap";
+			ofstream osmap((osfmap.str()).c_str(), ios_base::app);
+			osmap << GetIter() << "\t" << GetType();
+			osmap.close();
+		}
 		GlobalWriteSuffDiStat(name);
 		SwitchType();
-		// for(int i = 0; i < GetNsite()-1; i++){
-		// 	stringstream osfmap;
-		// 	osfmap << name << '_' << i << ".suffdistatmap";
-		// 	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
-		// 	osmap << '\n';
-		// 	osmap.close();
-		// }
+		
 
 		// GlobalWriteMappings(name);
 
@@ -4001,10 +4001,7 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i){
 					
 				}
 			}
-			os << GetIter();
-			os << "\t" << GetType();
 			os << "\t" << GetBranchIndex(from->GetBranch());
-			
 			os << "\t" << branchwaitingtime[pair<int,int>(1, 2)];
 			os << "\t" << branchwaitingtime[pair<int,int>(2, 1)];
 			os << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(1,2),std::pair<int,int>(3,2))];
