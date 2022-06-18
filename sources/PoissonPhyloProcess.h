@@ -88,8 +88,8 @@ class PoissonPhyloProcess : public virtual PhyloProcess, public virtual PoissonS
 	}
 
 	void RecursiveUnzipBranchSitePath(const Link* from);
-	void SlaveWriteMappings()override;
-	void SlaveWriteSuffStat() override;
+	void SlaveWriteMappings() ;
+	void SlaveWriteSuffStat() ;
 
 	void GlobalSetTestData();
 	void SlaveSetTestData();

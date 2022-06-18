@@ -3513,7 +3513,7 @@ void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
 		GlobalSetDataFromLeaves();
 
 		// write posterior predictive mappings
-		GlobalWriteSuffStat(name, GetIter(), 0);
+		GlobalWriteSuffStat(name, GetIter(), 1);
 		// SwitchType();
 		// for(int i = 0; i < GetNsite(); i++){
 		// 	stringstream osfmap;
