@@ -4003,9 +4003,9 @@ void PhyloProcess::WriteSuffDiStat(ostream& os, const Link* from, int i, int ite
 			clock_start = 0;
 			if (map_.size() > 2){
 				for (unsigned long i = 2; i < map_.size(); i++){
+					clock_end = get<0>(map_[i]);
 					int new_state  = get<1>(map_[i]);
 					int new_pos  = get<2>(map_[i]);
-					clock_end = get<0>(map_[i]);
 					if (clock_end < clock_start){
 						cerr << "Something wrong with timing of substitutions\n";
 						cerr << new_state << "\t" << new_pos << "\t" << state_a << "\t" << state_b << "\t" << clock_start << "\t" << clock_end << "\n";
