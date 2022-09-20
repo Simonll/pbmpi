@@ -3862,8 +3862,7 @@ void PhyloProcess::SlaveWriteSuffDiStat(){
 		}
 	}
 }
-map< pair<int,int>, int> branchpaircount; 
-		map<int,double> branchwaitingtime;
+
 void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i, int iter, int type, map< pair<int,int>, int> branchpaircount, map<int,double> branchwaitingtime){
 	if(from->isLeaf()){
 	}
