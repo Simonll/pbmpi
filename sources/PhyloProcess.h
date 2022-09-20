@@ -382,7 +382,7 @@ class PhyloProcess : public virtual SubstitutionProcess, public virtual BranchPr
 	virtual void SlaveWriteSuffStat();
 	virtual void SlaveWriteSuffDiStat();
 
-	void WriteSuffStat(ostream& os, const Link* from, int i, int iter, int type,map< pair<int,int>, int> branchpaircount, map<int,double> branchwaitingtime);
+	void WriteSuffStat(ostream& os, const Link* from, int i, int iter, int type,std::map< std::pair<int,int>, int>& branchpaircount, std::map<int,double>& branchwaitingtime);
 	void WriteSuffDiStat(ostream& os, const Link* from, int i, int iter, int type);
 	void WriteTreeBranchName(ostream& os, const Link* from);
 	

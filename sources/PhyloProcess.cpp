@@ -3810,8 +3810,8 @@ void PhyloProcess::SlaveWriteSuffStat(){
 		stringstream osfmap;
 		osfmap << name << '_' << i << ".suffstatmap";
 		ofstream osmap((osfmap.str()).c_str(), ios_base::app);
-		map< pair<int,int>, int> branchpaircount; 
-		map<int,double> branchwaitingtime;
+		std::map< std::pair<int,int>, int> branchpaircount; 
+		std::map<int,double> branchwaitingtime;
 		WriteSuffStat(osmap, GetRoot(), i, iter, type, branchpaircount, branchwaitingtime);
 		if (type == 0){
 			osmap << iter << "\t" << "post" ;
@@ -3863,7 +3863,7 @@ void PhyloProcess::SlaveWriteSuffDiStat(){
 	}
 }
 
-void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i, int iter, int type, map< pair<int,int>, int> branchpaircount, map<int,double> branchwaitingtime){
+void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i, int iter, int type, std::map< std::pair<int,int>, int>& branchpaircount, std::map<int,double>& branchwaitingtime){
 	if(from->isLeaf()){
 	}
 	else{
