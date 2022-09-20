@@ -3814,22 +3814,22 @@ void PhyloProcess::SlaveWriteSuffStat(){
 		map<int,double> branchwaitingtime;
 		WriteSuffStat(osmap, GetRoot(), i, iter, type, branchpaircount, branchwaitingtime);
 		if (type == 0){
-			os << iter << "\t" << "post" ;
+			osmap << iter << "\t" << "post" ;
 		} else {
-			os << iter << "\t" << "pred" ;
+			osmap << iter << "\t" << "pred" ;
 		}
 		// os <<  "\t" << GetBranchIndex(from->GetBranch());
 		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
-			os << "\t" << branchwaitingtime[k];
+			osmap << "\t" << branchwaitingtime[k];
 		}
 		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
 			for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
 				if (k != l ){
-					os << "\t" << branchpaircount[pair<int,int>(k, l)];
+					osmap << "\t" << branchpaircount[pair<int,int>(k, l)];
 				}
 			}
 		}
-		os << "\n";
+		osmap << "\n";
 		osmap.close();
 	}
 }
