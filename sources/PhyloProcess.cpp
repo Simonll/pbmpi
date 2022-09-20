@@ -3450,7 +3450,7 @@ void PhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
 		ofstream osmap((osfmap.str()).c_str());
 		osmap << "mcmcID";
 		osmap << "\t" << "type";
-		osmap << "\t" << "branchID";
+		// osmap << "\t" << "branchID";
 		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
 			osmap<< "\t" << GetStateSpace()->GetState(k);
 		}
@@ -3810,7 +3810,26 @@ void PhyloProcess::SlaveWriteSuffStat(){
 		stringstream osfmap;
 		osfmap << name << '_' << i << ".suffstatmap";
 		ofstream osmap((osfmap.str()).c_str(), ios_base::app);
-		WriteSuffStat(osmap, GetRoot(), i, iter, type);
+		map< pair<int,int>, int> branchpaircount; 
+		map<int,double> branchwaitingtime;
+		WriteSuffStat(osmap, GetRoot(), i, iter, type, branchpaircount, branchwaitingtime);
+		if (type == 0){
+			os << iter << "\t" << "post" ;
+		} else {
+			os << iter << "\t" << "pred" ;
+		}
+		// os <<  "\t" << GetBranchIndex(from->GetBranch());
+		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
+			os << "\t" << branchwaitingtime[k];
+		}
+		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
+			for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
+				if (k != l ){
+					os << "\t" << branchpaircount[pair<int,int>(k, l)];
+				}
+			}
+		}
+		os << "\n";
 		osmap.close();
 	}
 }
@@ -3843,21 +3862,22 @@ void PhyloProcess::SlaveWriteSuffDiStat(){
 		}
 	}
 }
-
-void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i, int iter, int type){
+map< pair<int,int>, int> branchpaircount; 
+		map<int,double> branchwaitingtime;
+void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i, int iter, int type, map< pair<int,int>, int> branchpaircount, map<int,double> branchwaitingtime){
 	if(from->isLeaf()){
 	}
 	else{
 		for (const Link* link=from->Next(); link!=from; link=link->Next()){
-			WriteSuffStat(os, link->Out(), i, iter, type);
+			WriteSuffStat(os, link->Out(), i, iter, type, branchpaircount, branchwaitingtime);
 		}
 	}
 	if(from->isRoot()){
 		// os << "\n";   
 	}
 	else{
-		map< pair<int,int>, int> branchpaircount; 
-		map<int,double> branchwaitingtime;
+		// map< pair<int,int>, int> branchpaircount; 
+		// map<int,double> branchwaitingtime;
 		BranchSitePath* mybsp = submap[GetBranchIndex(from->GetBranch())][i];
 		
 		double l = GetLength(from->GetBranch());
@@ -3881,23 +3901,23 @@ void PhyloProcess::WriteSuffStat(ostream& os, const Link* from, int i, int iter,
 		} else {
 			branchwaitingtime[state_from] += clock_end - clock_start;
 		}
-		if (type == 0){
-			os << iter << "\t" << "post" ;
-		} else {
-			os << iter << "\t" << "pred" ;
-		}
-		os <<  "\t" << GetBranchIndex(from->GetBranch());
-		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
-			os << "\t" << branchwaitingtime[k];
-		}
-		for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
-			for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
-				if (k != l ){
-					os << "\t" << branchpaircount[pair<int,int>(k, l)];
-				}
-			}
-		}
-		os << "\n";
+		// if (type == 0){
+		// 	os << iter << "\t" << "post" ;
+		// } else {
+		// 	os << iter << "\t" << "pred" ;
+		// }
+		// os <<  "\t" << GetBranchIndex(from->GetBranch());
+		// for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
+		// 	os << "\t" << branchwaitingtime[k];
+		// }
+		// for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
+		// 	for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
+		// 		if (k != l ){
+		// 			os << "\t" << branchpaircount[pair<int,int>(k, l)];
+		// 		}
+		// 	}
+		// }
+		// os << "\n";
 	}
 }
 
