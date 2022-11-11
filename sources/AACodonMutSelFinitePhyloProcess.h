@@ -312,10 +312,13 @@ class AACodonMutSelFinitePhyloProcess : public virtual AACodonMutSelFiniteSubsti
 	virtual void ReadPB(int argc, char* argv[]);
 	void Read(string name, int burnin, int every, int until);
 	void ReadMapStats(string name, int burnin, int every, int until);
+	void ReadMapCpGMutRate(string name, int burnin, int every, int until);
 	int CountNonSynMapping(int i);
 	int CountNonSynMapping();
 	int GlobalNonSynMapping();
 	virtual void SlaveNonSynMapping();
+	void SlaveWriteSuffStat();
+	void WriteSuffStat(const Link* from, int i, int iter, int type, std::map< std::pair<int,int>, int>& branchpaircount, std::map<int,double>& branchwaitingtime);
 
 	double Move(double tuning = 1.0)	{
 		chronototal.Start();

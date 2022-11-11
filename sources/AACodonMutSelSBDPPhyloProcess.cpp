@@ -614,19 +614,19 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapCpGMutRate(string name, int burnin, i
 	WriteTreeBranchName(osreftree, GetRoot());
 	osreftree.close();
 
-	for(int i = 0; i < GetNsite(); i++){
+	for(int i = 0; i < ProfileProcess::GetNsite(); i++){
 		stringstream osfmap;
 		osfmap << name << '_' << i << ".suffdistatmap";
 		ofstream osmap((osfmap.str()).c_str());
 		osmap<< "mcmcID";
 		osmap<< "\t" <<"type";
-		osmap<< "\t" <<"branchID";
-		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2);
-		osmap<< "\t" << GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(1);
-		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2)<<">"<<GetStateSpace()->GetState(3)<<GetStateSpace()->GetState(2);
-		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2)<<">"<<GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(0);
-		osmap<< "\t" << GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(1)<<">"<<GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(3);
-		osmap<< "\t" << GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(1)<<">"<<GetStateSpace()->GetState(0)<<GetStateSpace()->GetState(1);
+		// osmap<< "\t" <<"branchID";
+		osmap<< "\t" << "CpG"; 
+		osmap<< "\t" << "TpA";
+		osmap<< "\t" << "CpG" << ">" << "TpG";
+		osmap<< "\t" << "CpG" << ">" << "CpA";
+		osmap<< "\t" << "TpA" << ">" << "CpA";
+		osmap<< "\t" << "TpA" << ">" << "TpG";
 		// for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
 		// 	for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
 		// 		osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l);
