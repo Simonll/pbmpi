@@ -582,12 +582,163 @@ void AACodonMutSelSBDPPhyloProcess::ReadPB(int argc, char* argv[])	{
 	else if (mapstats == 2)	{
 		ReadMapDiStats(name,burnin,every,until);
 	}
+	else if (mapstats == 3)	{
+		ReadMapCpGMutRate(name,burnin,every,until);
+	}
 	else if (ppred)	{
 		PostPred(ppred,name,burnin,every,until,rateprior,profileprior,rootprior,savetrees);
 	}
 	else	{
 		Read(name,burnin,every,until);
 	}
+}
+
+void AACodonMutSelSBDPPhyloProcess::ReadMapCpGMutRate(string name, int burnin, int every, int until){
+	ifstream is((name + ".chain").c_str());
+	if (!is)	{
+		cerr << "error: no .chain file found\n";
+		exit(1);
+	}
+	cerr << "burnin : " << burnin << "\n";
+	cerr << "until : " << until << '\n';
+	
+	while ((GetIter() < until) && (GetIter() < burnin))	{
+		FromStream(is);
+		IncrementIter();
+	}
+	int samplesize = 0;
+
+	stringstream osfreftree;
+	osfreftree << name  << ".reftreemap";
+	ofstream osreftree((osfreftree.str()).c_str());
+	WriteTreeBranchName(osreftree, GetRoot());
+	osreftree.close();
+
+	for(int i = 0; i < GetNsite(); i++){
+		stringstream osfmap;
+		osfmap << name << '_' << i << ".suffdistatmap";
+		ofstream osmap((osfmap.str()).c_str());
+		osmap<< "mcmcID";
+		osmap<< "\t" <<"type";
+		osmap<< "\t" <<"branchID";
+		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2);
+		osmap<< "\t" << GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(1);
+		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2)<<">"<<GetStateSpace()->GetState(3)<<GetStateSpace()->GetState(2);
+		osmap<< "\t" << GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(2)<<">"<<GetStateSpace()->GetState(1)<<GetStateSpace()->GetState(0);
+		osmap<< "\t" << GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(1)<<">"<<GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(3);
+		osmap<< "\t" << GetStateSpace()->GetState(2)<<GetStateSpace()->GetState(1)<<">"<<GetStateSpace()->GetState(0)<<GetStateSpace()->GetState(1);
+		// for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
+		// 	for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
+		// 		osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l);
+		// 	}
+		// }
+		// for(int k = 0; k < GetStateSpace()->GetNstate(); k++){
+		// 	for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
+		// 		for(int m = 0; m < GetStateSpace()->GetNstate(); m++){
+		// 			for(int n = 0; n < GetStateSpace()->GetNstate(); n++){
+		// 				if (std::pair<int,int>(k,l) != std::pair<int,int>(m,n) ){
+		// 					osmap<< "\t" << GetStateSpace()->GetState(k)<<GetStateSpace()->GetState(l)<<">"<<GetStateSpace()->GetState(m)<<GetStateSpace()->GetState(n);
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
+		osmap << "\n";
+		osmap.close();
+	}
+	while (GetIter() < until)	{
+		cerr << ".";
+		// cerr << i << '\t' << rnd::GetRandom().Uniform() << '\n';
+
+		cerr.flush();
+		samplesize++;
+		FromStream(is);
+		IncrementIter();
+
+		// prepare file for ancestral node states
+		// ostringstream s;
+		// s << name << "_" << samplesize << ".nodestates";
+		// ofstream sos(s.str().c_str());
+
+		// quick update and mapping on the fly
+		MESSAGE signal = BCAST_TREE;
+		MPI_Bcast(&signal,1,MPI_INT,0,MPI_COMM_WORLD);
+		GlobalBroadcastTree();
+		GlobalUpdateConditionalLikelihoods();
+		GlobalCollapse();
+
+		// write posterior mappings
+		// for(int i = 0; i < GetNsite()-1; i++){
+		// 	stringstream osfmap;
+		// 	osfmap << name << '_' << i << ".suffdistatmap";
+		// 	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
+		// 	osmap << GetIter() << "\t" << GetType();
+		// 	osmap.close();
+		// }
+		GlobalWriteSuffDiStat(name, GetIter(), 0);
+		// SwitchType();
+		
+
+		// write posterior ancestral node states
+		// GlobalSetNodeStates();
+		// WriteNodeStates(sos,GetRoot());
+		// sos << '\n';
+
+		// double obs = GlobalCountMapping();
+
+		//Posterior Predictive Mappings
+		GlobalUnfold();
+		GlobalUnclamp();
+		GlobalCollapse();
+
+		GlobalSetDataFromLeaves();
+
+		// write posterior predictive mappings
+		// for(int i = 0; i < GetNsite()-1; i++){
+		// 	stringstream osfmap;
+		// 	osfmap << name << '_' << i << ".suffdistatmap";
+		// 	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
+		// 	osmap << GetIter() << "\t" << GetType();
+		// 	osmap.close();
+		// }
+		GlobalWriteSuffDiStat(name, GetIter(),1);
+		// SwitchType();
+		
+
+		// GlobalWriteMappings(name);
+
+		// write posterior predictive ancestral node states
+		// GlobalSetNodeStates();
+		// WriteNodeStates(sos,GetRoot());
+
+		// double pred = GlobalCountMapping();
+
+		// obs /= GetNsite();
+		// pred /= GetNsite();
+
+		// meandiff += obs - pred;
+		// vardiff += (obs-pred)*(obs-pred);
+		// meanobs += obs;
+
+		GlobalRestoreData();
+		GlobalUnfold();
+
+		
+		int nrep = 1;
+		while ((iter<until) && (nrep < every))	{
+			FromStream(is);
+			iter++;
+			nrep++;
+		}
+	}
+	cerr << '\n';
+	// meandiff /= samplesize;
+	// vardiff /= samplesize;
+	// vardiff -= meandiff*meandiff;
+	// meanobs /= samplesize;
+	// cerr << "mean obs : " << meanobs << '\n';
+	// cerr << meandiff << '\t' << sqrt(vardiff) << '\n';
+
 }
 
 void AACodonMutSelSBDPPhyloProcess::ReadMapStats(string name, int burnin, int every, int until){
