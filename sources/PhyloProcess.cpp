@@ -3558,15 +3558,15 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 			GlobalUpdateConditionalLikelihoods();
 			GlobalCollapse();
 			// write posterior mappings
-			// GlobalWriteSuffDiStat(name, GetIter(), 0);
-			GetSuffDiStat(name, GetIter(), 0);
+			GlobalWriteSuffDiStat(name, GetIter(), 0);
+			// GetSuffDiStat(name, GetIter(), 0);
 			//Posterior Predictive Mappings
 			GlobalUnfold();
 			GlobalUnclamp();
 			GlobalCollapse();
 			GlobalSetDataFromLeaves();
-			// GlobalWriteSuffDiStat(name, GetIter(),1);
-			GetSuffDiStat(name, GetIter(), 1);
+			GlobalWriteSuffDiStat(name, GetIter(),1);
+			// GetSuffDiStat(name, GetIter(), 1);
 
 			GlobalRestoreData();
 			GlobalUnfold();
@@ -3773,30 +3773,28 @@ void PhyloProcess::SlaveWriteSuffDiStat(){
 	}
 	string name = os.str();
 	delete[] bvector;
+	std::map<std::tuple<std::pair<int,int>,std::pair<int,int>>, int> branchpaircount; 
+	std::map<std::pair<int,int>,double> branchwaitingtime;
 	for(int i = sitemin; i < sitemax; i++){
-		std::map<std::tuple<std::pair<int,int>,std::pair<int,int>>, int> branchpaircount; 
-		std::map<std::pair<int,int>,double> branchwaitingtime;
 		WriteSuffDiStat(GetRoot(), i, iter, type, branchpaircount, branchwaitingtime);
-		stringstream osfmap;
-		osfmap << name << "_" << i << ".TsCpGRate";
-		ofstream osmap((osfmap.str()).c_str(), ios_base::app);
-
-		if (type == 0){
-			osmap << iter << "\t" << "post" ;
-		} else {
-			osmap << iter << "\t" << "pred" ;
-		}
-		osmap << "\t" << branchwaitingtime[pair<int,int>(1, 2)];
-		osmap << "\t" << branchwaitingtime[pair<int,int>(3, 0)];
-		osmap << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(1,2),std::pair<int,int>(3,2))];
-		osmap << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(1,2),std::pair<int,int>(1,0))];
-		osmap << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(3,0),std::pair<int,int>(2,0))];
-		osmap << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(3,0),std::pair<int,int>(3,2))];
-		osmap << "\n";
-		osmap.close();
-
 	}
-	
+	stringstream osfmap;
+	// osfmap << name << "_" << i << ".TsCpGRate";
+	osfmap << name << ".TsCpGRate";
+	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
+	if (type == 0){
+		osmap << iter << "\t" << "post" ;
+	} else {
+		osmap << iter << "\t" << "pred" ;
+	}
+	osmap << "\t" << branchwaitingtime[pair<int,int>(1, 2)];
+	osmap << "\t" << branchwaitingtime[pair<int,int>(3, 0)];
+	osmap << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(1,2),std::pair<int,int>(3,2))];
+	osmap << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(1,2),std::pair<int,int>(1,0))];
+	osmap << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(3,0),std::pair<int,int>(2,0))];
+	osmap << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(3,0),std::pair<int,int>(3,2))];
+	osmap << "\n";
+	osmap.close();
 }
 
 void PhyloProcess::WriteSuffStat(const Link* from, int i, int iter, int type, std::map< std::pair<int,int>, int>& branchpaircount, std::map<int,double>& branchwaitingtime){
