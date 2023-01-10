@@ -3558,15 +3558,15 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 			GlobalUpdateConditionalLikelihoods();
 			GlobalCollapse();
 			// write posterior mappings
-			GlobalWriteSuffDiStat(name, GetIter(), 0);
-			// GetSuffDiStat(name, GetIter(), 0);
+			// GlobalWriteSuffDiStat(name, GetIter(), 0);
+			GetSuffDiStat(name, GetIter(), 0);
 			//Posterior Predictive Mappings
 			GlobalUnfold();
 			GlobalUnclamp();
 			GlobalCollapse();
 			GlobalSetDataFromLeaves();
-			GlobalWriteSuffDiStat(name, GetIter(),1);
-			// GetSuffDiStat(name, GetIter(), 1);
+			// GlobalWriteSuffDiStat(name, GetIter(),1);
+			GetSuffDiStat(name, GetIter(), 1);
 
 			GlobalRestoreData();
 			GlobalUnfold();
