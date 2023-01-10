@@ -3731,13 +3731,11 @@ void PhyloProcess::SlaveWriteSuffStat(){
 }
 
 void PhyloProcess::GetSuffDiStat(string name, int iter, int type ){
-	std::cerr << "AAAA\n";
 	std::map<std::tuple<std::pair<int,int>,std::pair<int,int>>, int> branchpaircount; 
 	std::map<std::pair<int,int>,double> branchwaitingtime;
 	for(int i = 0; i < GetNsite(); i++){
 			WriteSuffDiStat(GetRoot(), i, iter, type, branchpaircount, branchwaitingtime);
 	}
-	std::cerr << "BBBB\n";
 	stringstream osfmap;
 	osfmap << name << ".TsCpGRate";
 	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
@@ -3747,7 +3745,6 @@ void PhyloProcess::GetSuffDiStat(string name, int iter, int type ){
 	} else {
 		osmap << iter << "\t" << "pred" ;
 	}
-	std::cerr << "CCCC\n";
 	osmap << "\t" << branchwaitingtime[pair<int,int>(1, 2)];
 	osmap << "\t" << branchwaitingtime[pair<int,int>(3, 0)];
 	osmap << "\t" << branchpaircount[std::tuple<std::pair<int,int>,std::pair<int,int>>(std::pair<int,int>(1,2),std::pair<int,int>(3,2))];
@@ -3967,7 +3964,7 @@ void PhyloProcess::WriteSuffDiStat(const Link* from, int i, int iter, int type, 
 
 			double clock_start = 0;
 			double clock_end = 0;
-			while (plink_X || plink_Y)	{
+			while (!plink_X->IsLast() || !plink_Y->IsLast())	{
 				if (wt_X < wt_Y){
 					clock_end = clock_start + wt_X;
 					wt_Y -= wt_X;
