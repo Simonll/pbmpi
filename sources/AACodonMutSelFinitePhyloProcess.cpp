@@ -598,11 +598,9 @@ void AACodonMutSelFinitePhyloProcess::ReadMapStats(string name, int burnin, int 
 	ofstream osmap_((osfmap_.str()).c_str());
 	osmap_ << "mcmcID" << "\t" << "type";
 	osmap_ << "\t" << "TcodonNCG" << "\t" <<  "NSubSynTsCpG23";
-	osmap_ << "\t" << "TcodonNCG_" << "\t" <<  "NSubSynTsCpG23_";
 	osmap_ << "\t" << "TcodonNTA" << "\t" << "NSubSynTsTpA23";
-	osmap_ << "\t" << "TcodonNTA_" << "\t" << "NSubSynTsTpA23_";
 	osmap_ << "\t" << "TotalWaitingTime" << "\t" << "NSub";
-	osmap_ << "\t" << "TotalWaitingTime_" << "\t" << "NSub_";
+	osmap_ << "\t" << "NNSynSyb" << "\t" << "NSynSub";
 	osmap_ << "\n";
 	osmap_.close();
 	
@@ -1356,7 +1354,8 @@ void AACodonMutSelFinitePhyloProcess::SlaveWriteSuffStat(){
 	double TcodonNTA = 0;
 	int NSubSynTsTpA_ = 0;
 	double TcodonNTA_ = 0;
-
+	double NNSynSub = 0;
+	double NSynSub = 0;
 
 	for(int i = sitemin; i < sitemax; i++){
 		PhyloProcess::WriteSuffStat(GetRoot(), i, iter, type, branchpaircount,branchwaitingtime);
@@ -1379,6 +1378,11 @@ void AACodonMutSelFinitePhyloProcess::SlaveWriteSuffStat(){
 		TotalWaitingTime += branchwaitingtime[k];
 		for(int l = 0; l < GetStateSpace()->GetNstate(); l++){
 			NSub += branchpaircount[std::pair<int,int>(k, l)];
+			if (!AACodonMutSelProfileProcess::statespace->Synonymous(k, l)){
+				NNSynSub += branchpaircount[std::pair<int,int>(k, l)];
+			} else {
+				NSynSub += branchpaircount[std::pair<int,int>(k, l)];
+			}
 		}
 	}
 	
@@ -1444,10 +1448,10 @@ void AACodonMutSelFinitePhyloProcess::SlaveWriteSuffStat(){
 	} else {
 		osmap_ << iter << "\t" << "pred" ;
 	}
-	osmap_ << "\t" << TcodonNCG << "\t" << NSubSynTsCpG << "\t" << TcodonNCG_ << "\t" << NSubSynTsCpG_;
-	osmap_ << "\t" << TcodonNTA << "\t" << NSubSynTsTpA << "\t" << TcodonNTA_ << "\t" << NSubSynTsTpA_;
+	osmap_ << "\t" << TcodonNCG << "\t" << NSubSynTsCpG;
+	osmap_ << "\t" << TcodonNTA << "\t" << NSubSynTsTpA;
 	osmap_ << "\t" << TotalWaitingTime << "\t" << NSub;
-	osmap_ << "\t" << TotalWaitingTime_ << "\t" << NSub_;
+	osmap_ << "\t" << NNSynSub << "\t" << NSynSub;
 	osmap_ << "\n";
 	osmap_.close();
 }
