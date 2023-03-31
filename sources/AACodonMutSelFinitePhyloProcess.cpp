@@ -775,7 +775,7 @@ void AACodonMutSelFinitePhyloProcess::Read(string name, int burnin, int every, i
 				stat[s] = 	GetNucStat(AACodonMutSelProfileProcess::statespace->GetCodonPosition(0, s)) *
 						GetNucStat(AACodonMutSelProfileProcess::statespace->GetCodonPosition(1, s)) *
 						GetNucStat(AACodonMutSelProfileProcess::statespace->GetCodonPosition(2, s)) *
-						codonprofile[s] *
+						codonprofile[s] * AACodonMutSelProfileProcess::statespace->GetDegeneracy(s) *
 						profile[alloc[site]][AACodonMutSelProfileProcess::statespace->Translation(s)];
 				Z += stat[s];
 			}
@@ -802,7 +802,7 @@ void AACodonMutSelFinitePhyloProcess::Read(string name, int burnin, int every, i
 						if (!AACodonMutSelProfileProcess::statespace->Synonymous(codonFrom, codonTo))	{
 							int aaFrom = AACodonMutSelProfileProcess::statespace->Translation(codonFrom);
 							int aaTo = AACodonMutSelProfileProcess::statespace->Translation(codonTo);
-							S = log(profile[alloc[site]][aaTo]/profile[alloc[site]][aaFrom]) + log(codonprofile[codonTo]/codonprofile[codonFrom]);
+							S = log(profile[alloc[site]][aaTo]/profile[alloc[site]][aaFrom]) + log(codonprofile[codonTo] * AACodonMutSelProfileProcess::statespace->GetDegeneracy(codonTo)/codonprofile[codonFrom] * AACodonMutSelProfileProcess::statespace->GetDegeneracy(codonFrom));
 						}
 						else	{
 							S = log(codonprofile[codonTo]/codonprofile[codonFrom]);

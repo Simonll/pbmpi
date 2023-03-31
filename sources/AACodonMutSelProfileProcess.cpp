@@ -132,11 +132,7 @@ void AACodonMutSelProfileProcess::SampleCodonProfile()	{
 	double total = 0;
 	for (int i=0; i<statespace->GetNstate(); i++)  {
 		//codonprofile[i] = rnd::GetRandom().sExpo();
-		codonprofile[i] = 1.0/statespace->GetNstate();
-		total += codonprofile[i];
-	}
-	for (int i=0; i<statespace->GetNstate(); i++)  {
-		codonprofile[i] /= total;
+		codonprofile[i] = 1.0/statespace->GetDegeneracy(i);
 	}
 }
 
@@ -341,6 +337,22 @@ double AACodonMutSelProfileProcess::MoveNucStatCodonProfile(double tuning, int n
 		}
 		double deltalogprob = -ProfileSuffStatLogProb();
 		ProfileProposeMove(codonprofile,tuning,n,statespace->GetNstate());
+		
+		// normalizing post move according to degeneracy
+		for (int aa = 0; aa < Naa; aa ++){
+			double total = 0;
+			for (int c; c < statespace->GetNstate(); c++){
+				if (aa == statespace->Translation(c)){
+					total += codonprofile[c];
+				}
+			}
+			for (int c; c < statespace->GetNstate(); c++){
+				if (aa == statespace->Translation(c)){
+					codonprofile[c] /= total;
+				}
+			}
+		}
+		
 		ProfileProposeMove(nucstat,tuning,n,Nnuc);
 		UpdateMatrices();
 		deltalogprob += ProfileSuffStatLogProb();
