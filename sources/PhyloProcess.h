@@ -369,7 +369,25 @@ class PhyloProcess : public virtual SubstitutionProcess, public virtual BranchPr
 	virtual void SlaveWriteMappings();
 	void WriteTreeMapping(ostream& os, const Link* from, int i);
 
+	void ReadMapStats(string name, int burnin, int every, int until);
+	void ReadMapDiStats(string name, int burnin, int every, int until);
+	int type;
+	int iter;
+	int GetIter();
+	void IncrementIter();
+	string GetType();
+	void SwitchType();
+	void GlobalWriteSuffStat(string name, int iter, int type);
+	void GlobalWriteSuffDiStat(string name, int iter, int type);
+	virtual void SlaveWriteSuffStat();
+    void GetSuffDiStat(string name, int iter, int type);
+    virtual void SlaveWriteSuffDiStat();
 
+    void WriteSuffStat(const Link* from, int i, int iter, int type, std::map< std::pair<int,int>, int>& branchpaircount, std::map<int,double>& branchwaitingtime);
+	void WriteSuffDiStat(const Link* from, int i, int iter, int type, std::map<std::tuple<std::pair<int,int>,std::pair<int,int>>, int> & branchpaircount, std::map<std::pair<int,int>,double> & branchwaitingtime); 
+	void WriteSuffDiStat_(const Link* from, int i, int iter, int type, std::map<std::tuple<std::pair<int,int>,std::pair<int,int>>, int> & branchpaircount, std::map<std::pair<int,int>,double> & branchwaitingtime);
+	void WriteTreeBranchName(ostream& os, const Link* from);
+	
 
 	virtual void GlobalSetTestData();
 	virtual void SlaveSetTestData();

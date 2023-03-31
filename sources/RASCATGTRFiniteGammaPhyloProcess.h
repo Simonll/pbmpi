@@ -120,6 +120,9 @@ class RASCATGTRFiniteGammaPhyloProcess : public virtual ExpoConjugateGTRPhyloPro
 
 	RASCATGTRFiniteGammaPhyloProcess(istream& is, int me, int np)	{
 
+		iter = 0;
+		type = 0;
+		
 		myid = me;
 		nprocs = np;
 

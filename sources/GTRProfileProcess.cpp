@@ -114,7 +114,26 @@ void GTRProfileProcess::SetRR(string type)	{
 				rr[i] /= total / Nrr;
 			}
 		}
-
+		
+		else if ((type == "flatgtraa"))	{
+			if (Nrr != 190)	{
+				if (! GetMyid())	{
+					cerr << "error : wag only applies to amino acid recoded data\n";
+					cerr << '\n';
+				}
+				MPI_Finalize();
+				exit(1);
+			}
+			double total = 0;
+			for (int i=0; i<Nrr; i++)	{
+				rr[i]= FLAT_RR[i];
+				total += rr[i];
+			}
+			for (int i=0; i<Nrr; i++)	{
+				rr[i] /= total / Nrr;
+			}
+		}
+			
 		else if ((type == "cg6") || (type == "CG6"))	{
 			if (Nrr != 190)	{
 				if (! GetMyid())	{
