@@ -241,32 +241,32 @@ int CodonStateSpace::GetDegeneracy(int codon)	{
 	return degeneracy[codon];
 };
 
+int CodonStateSpace::GetDegeneracyAA(int aa)	{
+
+	if (!degeneracy.size())	{
+		MakeDegeneracyMap();
+	}
+	if (aa == -1)	{
+		return -1;
+	}
+	return degeneracyAA[aa];
+};
+
 void CodonStateSpace::MakeDegeneracyMap()	{
 
-	for (int codon =0; codon < Nstate; codon++)	{
-		cerr << codon << '\t' << GetState(codon) << '\t';
-		int pos1 = GetCodonPosition(0,codon);
-		int pos2 = GetCodonPosition(1,codon);
-		int aa = Translation(codon);
-		int d = 0;
-		for (int n=0; n<Nnuc; n++)	{
-			int cod = GetCodonFromDNA(pos1,pos2,n);
-			if ((cod != -1) && (Translation(cod) == aa))	{
-				d++;
+	for (int aa = 0; aa < Naa; aa++){
+		int deg = 0;
+		for (int codon = 0; codon < Nstate; codon ++){
+			if (aa == Translation(codon)){
+				deg ++;
 			}
-			cerr << GetState(cod);
-			if (cod == -1)	{
-				cerr << " $ ";
-			}
-			else	{
-				cerr << ' ' << GetProteinStateSpace()->GetState(Translation(cod)) << ' ';
-			}
+
 		}
-		cerr << '\t';
-		cerr << d << '\n';
-		degeneracy[codon] = d;
+		for (int codon = 0; codon < Nstate; codon ++){
+			degeneracy[codon] = deg;
+		}
+		degeneracyAA[aa] = deg;
 	}
-	cerr << "ok\n";
 };
 
 int CodonStateSpace::IsNonCTNearest(int a, int b)	{

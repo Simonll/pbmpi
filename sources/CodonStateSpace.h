@@ -104,6 +104,7 @@ class CodonStateSpace : public StateSpace	{
 	*/
 
 	int GetDegeneracy(int codon);
+	int GetDegeneracyAA(int AA);
 
 	int GetNstop()	{
 		return Nstop;
@@ -145,6 +146,7 @@ class CodonStateSpace : public StateSpace	{
 	int* StopPos3;
 
 	map<int,int> degeneracy;
+	map<int,int> degeneracyAA;
 
 };
 
