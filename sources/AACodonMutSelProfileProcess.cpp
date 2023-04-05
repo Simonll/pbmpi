@@ -347,10 +347,17 @@ double AACodonMutSelProfileProcess::MoveNucStatCodonProfile(double tuning, int n
 				}
 			}
 			ProfileProposeMove(codonsubprofile,tuning,n,statespace->GetDegeneracyAA(aa));
+			double total = 0;
 			for (int codon = 0; codon < statespace->GetNstate(); codon++){
 				if (aa == statespace->Translation(codon)){
 					codonprofile[codon] = codonsubprofile[statespace->GetDegeneracyAA(aa) - counter];
+					total += codonprofile[codon];
 					counter--;
+				}
+			}
+			for (int codon = 0; codon < statespace->GetNstate(); codon++){
+				if (aa == statespace->Translation(codon)){
+					codonprofile[codon] /= total;
 				}
 			}
 			delete [] codonsubprofile;
