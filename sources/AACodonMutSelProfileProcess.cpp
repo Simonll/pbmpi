@@ -303,20 +303,44 @@ double AACodonMutSelProfileProcess::MoveCodonProfile(double tuning, int n, int n
 			bk[k] = codonprofile[k];
 		}
 		double deltalogprob = -ProfileSuffStatLogProb();
-		double loghastings = ProfileProposeMove(codonprofile,tuning,n,statespace->GetNstate());
-		UpdateMatrices();
-		deltalogprob += ProfileSuffStatLogProb();
-		deltalogprob += loghastings;
-		int accepted = (rnd::GetRandom().Uniform() < exp(deltalogprob));
-		if (accepted)   {
-			naccepted ++;
-		}
-		else    {
-			for (int k=0; k<statespace->GetNstate(); k++)  {
-				codonprofile[k] = bk[k];
+		for (int aa = 0; aa < Naa; aa++){
+			double* codonsubprofile = new double[statespace->GetDegeneracyAA(aa)];
+			int counter = 0;
+			for (int codon = 0; codon < statespace->GetNstate(); codon++){
+				if (aa == statespace->Translation(codon)){
+					codonsubprofile[counter] = codonprofile[codon];
+					counter++;
+				}
 			}
+			double loghastings = ProfileProposeMove(codonsubprofile,tuning,n,statespace->GetDegeneracyAA(aa));
+			double total = 0;
+			for (int codon = 0; codon < statespace->GetNstate(); codon++){
+				if (aa == statespace->Translation(codon)){
+					codonprofile[codon] = codonsubprofile[statespace->GetDegeneracyAA(aa) - counter];
+					total += codonprofile[codon];
+					counter--;
+				}
+			}
+			for (int codon = 0; codon < statespace->GetNstate(); codon++){
+				if (aa == statespace->Translation(codon)){
+					codonprofile[codon] /= total;
+				}
+			}
+			delete [] codonsubprofile;
 			UpdateMatrices();
-		}
+			deltalogprob += ProfileSuffStatLogProb();
+			deltalogprob += loghastings;
+			int accepted = (rnd::GetRandom().Uniform() < exp(deltalogprob));
+			if (accepted)   {
+				naccepted ++;
+			}
+			else    {
+				for (int k=0; k<statespace->GetNstate(); k++)  {
+					codonprofile[k] = bk[k];
+				}
+				UpdateMatrices();
+			}
+		}					
 	}
 	delete[] bk;
 	return naccepted; 
