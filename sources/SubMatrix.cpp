@@ -571,7 +571,7 @@ void SubMatrix::CheckReversibility()	{
 			}
 		}
 	}
-	if (max > 1e-2)	{
+	if (max > 1e-6)	{
 		cerr << "max irreversibility: " << max << '\n';
 		cerr << imax << '\t' << jmax << '\t' << Stationary(imax) << '\t' << Q[imax][jmax] << '\t' << Stationary(jmax) << '\t' << Q[jmax][imax] << '\n';
 		exit(1);
