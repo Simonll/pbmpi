@@ -836,7 +836,7 @@ void AACodonMutSelSBDPPhyloProcess::Read(string name, int burnin, int every, int
 				stat[s] = 	GetNucStat(AACodonMutSelProfileProcess::statespace->GetCodonPosition(0, s)) *
 						GetNucStat(AACodonMutSelProfileProcess::statespace->GetCodonPosition(1, s)) *
 						GetNucStat(AACodonMutSelProfileProcess::statespace->GetCodonPosition(2, s)) *
-						codonprofile[s] * AACodonMutSelProfileProcess::statespace->GetDegeneracy(s) *
+						codonprofile[s] * AACodonMutSelProfileProcess::statespace->GetDegeneracy(s) / Nstate* 
 						profile[alloc[site]][AACodonMutSelProfileProcess::statespace->Translation(s)];
 				Z += stat[s];
 			}

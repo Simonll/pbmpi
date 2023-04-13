@@ -195,7 +195,7 @@ void AACodonMutSelProfileSubMatrix::ComputeArray(int i)	{
 				Q[i][j] = nucrr[GetNucRRIndex(a,b)] * nucstat[b];
 				if (! Synonymous(i,j))  {
 					deltaF = log((aaprofile)[GetCodonStateSpace()->Translation(j)] / (aaprofile)[GetCodonStateSpace()->Translation(i)]) +
-							log( (codonprofile)[j] * GetCodonStateSpace()->GetDegeneracy(j)/ (codonprofile)[i] * GetCodonStateSpace()->GetDegeneracy(i) );
+							log( (codonprofile)[j] * GetCodonStateSpace()->GetDegeneracy(j) / (codonprofile)[i] * GetCodonStateSpace()->GetDegeneracy(i) );
 					Q[i][j] *= *omega;
 
 					//cerr << "in ComputeArray, omega is " << *omega << "\n";	
@@ -272,7 +272,7 @@ void AACodonMutSelProfileSubMatrix::ComputeStationary()	{
 		mStationary[i] =nucstat[GetCodonPosition(0,i)] * 
 				nucstat[GetCodonPosition(1,i)] * 
 				nucstat[GetCodonPosition(2,i)] *
-				codonprofile[i] * GetCodonStateSpace()->GetDegeneracy(i) *
+				codonprofile[i] * GetCodonStateSpace()->GetDegeneracy(i) / GetNstate() *
 				aaprofile[GetCodonStateSpace()->Translation(i)];
 		//if (mStationary[i] < TOOSMALL)	{
 		//	mStationary[i] = 0;
