@@ -863,7 +863,8 @@ void AACodonMutSelSBDPPhyloProcess::Read(string name, int burnin, int every, int
 						if (!AACodonMutSelProfileProcess::statespace->Synonymous(codonFrom, codonTo))	{
 							int aaFrom = AACodonMutSelProfileProcess::statespace->Translation(codonFrom);
 							int aaTo = AACodonMutSelProfileProcess::statespace->Translation(codonTo);
-							S = log(profile[alloc[site]][aaTo]/profile[alloc[site]][aaFrom]) + log(codonprofile[codonTo] * AACodonMutSelProfileProcess::statespace->GetDegeneracy(codonTo)/codonprofile[codonFrom] * AACodonMutSelProfileProcess::statespace->GetDegeneracy(codonFrom));
+							S = log(profile[alloc[site]][aaTo]/profile[alloc[site]][aaFrom]);
+							// + log(codonprofile[codonTo] * AACodonMutSelProfileProcess::statespace->GetDegeneracy(codonTo)/codonprofile[codonFrom] * AACodonMutSelProfileProcess::statespace->GetDegeneracy(codonFrom));
 						}
 						else	{
 							S = log(codonprofile[codonTo]/codonprofile[codonFrom]);
