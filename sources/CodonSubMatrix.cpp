@@ -272,7 +272,7 @@ void AACodonMutSelProfileSubMatrix::ComputeStationary()	{
 		mStationary[i] =nucstat[GetCodonPosition(0,i)] * 
 				nucstat[GetCodonPosition(1,i)] * 
 				nucstat[GetCodonPosition(2,i)] *
-				codonprofile[i] * GetCodonStateSpace()->GetDegeneracy(i) / GetNstate() *
+				codonprofile[i] *
 				aaprofile[GetCodonStateSpace()->Translation(i)];
 		//if (mStationary[i] < TOOSMALL)	{
 		//	mStationary[i] = 0;
