@@ -1,34 +1,40 @@
 
 #include <iostream>
-#include<sstream>
+#include <sstream>
 #include <cstdlib>
 using namespace std;
 
 #include "CodonStateSpace.h"
 
-CodonStateSpace::CodonStateSpace(GeneticCodeType type)	{
+CodonStateSpace::CodonStateSpace(GeneticCodeType type)
+{
 
 	nucstatespace = new DNAStateSpace;
 	protstatespace = new ProteinStateSpace;
 
 	code = type;
-	if (code == Universal)	{
+	if (code == Universal)
+	{
 		Nstate = Ncodon - UniNStopCodons;
 
-		CodonCodeWithStops = new int[Ncodon]; 	// stops included
-		CodonCode = new int[Nstate]; 		// stops excluded
+		CodonCodeWithStops = new int[Ncodon]; // stops included
+		CodonCode = new int[Nstate];		  // stops excluded
 
-		CodonPos = new int*[Npos];
-		for (int pos=0; pos<Npos; pos++)	{
+		CodonPos = new int *[Npos];
+		for (int pos = 0; pos < Npos; pos++)
+		{
 			CodonPos[pos] = new int[Nstate]; // stops excluded
 		}
 
 		int k = 0;
-		for (int i=0; i<Ncodon; i++)	{
+		for (int i = 0; i < Ncodon; i++)
+		{
 			CodonCodeWithStops[i] = UniCodonCode[i];
-			if (CodonCodeWithStops[i] != -1)	{
+			if (CodonCodeWithStops[i] != -1)
+			{
 				CodonCode[k] = CodonCodeWithStops[i];
-				for (int pos=0; pos<Npos; pos++)	{
+				for (int pos = 0; pos < Npos; pos++)
+				{
 					CodonPos[pos][k] = codonpos[pos][i];
 				}
 				k++;
@@ -40,31 +46,36 @@ CodonStateSpace::CodonStateSpace(GeneticCodeType type)	{
 		StopPos1 = new int[Nstop];
 		StopPos2 = new int[Nstop];
 		StopPos3 = new int[Nstop];
-		for (int i=0; i<Nstop; i++)	{
+		for (int i = 0; i < Nstop; i++)
+		{
 			StopCodons[i] = UniStopCodons[i];
 			StopPos1[i] = UniStopPos1[i];
 			StopPos2[i] = UniStopPos2[i];
 			StopPos3[i] = UniStopPos3[i];
 		}
-
 	}
-	else if (code == MtInv)	{
+	else if (code == MtInv)
+	{
 		Nstate = Ncodon - MtInvNStopCodons;
 
-		CodonCodeWithStops = new int[Ncodon]; 	// stops included
-		CodonCode = new int[Nstate]; 		// stops excluded
+		CodonCodeWithStops = new int[Ncodon]; // stops included
+		CodonCode = new int[Nstate];		  // stops excluded
 
-		CodonPos = new int*[Npos];
-		for (int pos=0; pos<Npos; pos++)	{
+		CodonPos = new int *[Npos];
+		for (int pos = 0; pos < Npos; pos++)
+		{
 			CodonPos[pos] = new int[Nstate]; // stops excluded
 		}
 
 		int k = 0;
-		for (int i=0; i<Ncodon; i++)	{
+		for (int i = 0; i < Ncodon; i++)
+		{
 			CodonCodeWithStops[i] = MtInvCodonCode[i];
-			if (CodonCodeWithStops[i] != -1)	{
+			if (CodonCodeWithStops[i] != -1)
+			{
 				CodonCode[k] = CodonCodeWithStops[i];
-				for (int pos=0; pos<Npos; pos++)	{
+				for (int pos = 0; pos < Npos; pos++)
+				{
 					CodonPos[pos][k] = codonpos[pos][i];
 				}
 				k++;
@@ -76,30 +87,36 @@ CodonStateSpace::CodonStateSpace(GeneticCodeType type)	{
 		StopPos1 = new int[Nstop];
 		StopPos2 = new int[Nstop];
 		StopPos3 = new int[Nstop];
-		for (int i=0; i<Nstop; i++)	{
+		for (int i = 0; i < Nstop; i++)
+		{
 			StopCodons[i] = MtInvStopCodons[i];
 			StopPos1[i] = MtInvStopPos1[i];
 			StopPos2[i] = MtInvStopPos2[i];
 			StopPos3[i] = MtInvStopPos3[i];
 		}
 	}
-	else if (code == MtMam)	{
+	else if (code == MtMam)
+	{
 		Nstate = Ncodon - MtMamNStopCodons;
 
-		CodonCodeWithStops = new int[Ncodon]; 	// stops included
-		CodonCode = new int[Nstate]; 		// stops excluded
+		CodonCodeWithStops = new int[Ncodon]; // stops included
+		CodonCode = new int[Nstate];		  // stops excluded
 
-		CodonPos = new int*[Npos];
-		for (int pos=0; pos<Npos; pos++)	{
+		CodonPos = new int *[Npos];
+		for (int pos = 0; pos < Npos; pos++)
+		{
 			CodonPos[pos] = new int[Nstate]; // stops excluded
 		}
 
 		int k = 0;
-		for (int i=0; i<Ncodon; i++)	{
+		for (int i = 0; i < Ncodon; i++)
+		{
 			CodonCodeWithStops[i] = MtMamCodonCode[i];
-			if (CodonCodeWithStops[i] != -1)	{
+			if (CodonCodeWithStops[i] != -1)
+			{
 				CodonCode[k] = CodonCodeWithStops[i];
-				for (int pos=0; pos<Npos; pos++)	{
+				for (int pos = 0; pos < Npos; pos++)
+				{
 					CodonPos[pos][k] = codonpos[pos][i];
 				}
 				k++;
@@ -111,26 +128,29 @@ CodonStateSpace::CodonStateSpace(GeneticCodeType type)	{
 		StopPos1 = new int[Nstop];
 		StopPos2 = new int[Nstop];
 		StopPos3 = new int[Nstop];
-		for (int i=0; i<Nstop; i++)	{
+		for (int i = 0; i < Nstop; i++)
+		{
 			StopCodons[i] = MtMamStopCodons[i];
 			StopPos1[i] = MtMamStopPos1[i];
 			StopPos2[i] = MtMamStopPos2[i];
 			StopPos3[i] = MtMamStopPos3[i];
 		}
 	}
-	else 	{
+	else
+	{
 		cerr << "genetic code not recognised\n";
 		cerr << type << '\n';
 		exit(1);
 	}
-
 }
 
-CodonStateSpace::~CodonStateSpace()	{
+CodonStateSpace::~CodonStateSpace()
+{
 
 	delete[] CodonCode;
 	delete[] CodonCodeWithStops;
-	for (int pos=0; pos<Npos; pos++)	{
+	for (int pos = 0; pos < Npos; pos++)
+	{
 		delete[] CodonPos[pos];
 	}
 	delete[] CodonPos;
@@ -139,150 +159,199 @@ CodonStateSpace::~CodonStateSpace()	{
 	delete protstatespace;
 }
 
-string CodonStateSpace::GetState(int codon)	{
+string CodonStateSpace::GetState(int codon)
+{
 	ostringstream s;
-	if (codon == -1)	{
+	if (codon == -1)
+	{
 		s << "---";
 	}
-	else	{
-		s << DNAletters[GetCodonPosition(0,codon)] << DNAletters[GetCodonPosition(1,codon)] << DNAletters[GetCodonPosition(2,codon)];
+	else
+	{
+		s << DNAletters[GetCodonPosition(0, codon)] << DNAletters[GetCodonPosition(1, codon)] << DNAletters[GetCodonPosition(2, codon)];
 	}
-	if (s.str().length() != 3)	{
+	if (s.str().length() != 3)
+	{
 		cerr << "error in translation\n";
 		exit(1);
 	}
 	return s.str();
 }
 
-int CodonStateSpace::GetState(string word)	{
-	return GetCodonFromDNA(GetDNAStateSpace()->GetState(word.substr(0,1)),GetDNAStateSpace()->GetState(word.substr(1,1)),GetDNAStateSpace()->GetState(word.substr(2,1)));
+int CodonStateSpace::GetState(string word)
+{
+	return GetCodonFromDNA(GetDNAStateSpace()->GetState(word.substr(0, 1)), GetDNAStateSpace()->GetState(word.substr(1, 1)), GetDNAStateSpace()->GetState(word.substr(2, 1)));
 }
 
-bool CodonStateSpace::CheckStop(int pos1, int pos2, int pos3)	{
-	if ((pos1 == unknown) || (pos2 == unknown) || (pos3 == unknown))	{
+bool CodonStateSpace::CheckStop(int pos1, int pos2, int pos3)
+{
+	if ((pos1 == unknown) || (pos2 == unknown) || (pos3 == unknown))
+	{
 		return false;
 	}
 	int l = 0;
-	while ((l < Nstop) && ((pos1 != StopPos1[l]) || (pos2 != StopPos2[l]) || (pos3 != StopPos3[l])))	{
+	while ((l < Nstop) && ((pos1 != StopPos1[l]) || (pos2 != StopPos2[l]) || (pos3 != StopPos3[l])))
+	{
 		l++;
 	}
 	return (l < Nstop);
 }
 
-int CodonStateSpace::GetCodonFromDNA(int pos1, int pos2, int pos3)	{
-	if ((pos1 == unknown) || (pos2 == unknown) || (pos3 == unknown))	{
+int CodonStateSpace::GetCodonFromDNA(int pos1, int pos2, int pos3)
+{
+	if ((pos1 == unknown) || (pos2 == unknown) || (pos3 == unknown))
+	{
 		return unknown;
 	}
 	int l = 0;
-	while ((l<GetNstate()) && ((pos1 != GetCodonPosition(0,l)) || (pos2 != GetCodonPosition(1,l)) || (pos3 != GetCodonPosition(2,l))))	{
+	while ((l < GetNstate()) && ((pos1 != GetCodonPosition(0, l)) || (pos2 != GetCodonPosition(1, l)) || (pos3 != GetCodonPosition(2, l))))
+	{
 		l++;
 	}
-	if (l == GetNstate())	{
+	if (l == GetNstate())
+	{
 		// cerr << "warning in CodonStateSpace::GetCodonFromDNA : out of bound : " << GetDNAStateSpace()->GetState(pos1) << GetDNAStateSpace()->GetState(pos2) << GetDNAStateSpace()->GetState(pos3) << '\n';
 		return -1;
 		cerr << "warning in CodonStateSpace::GetCodonFromDNA : out of bound : " << GetDNAStateSpace()->GetState(pos1) << GetDNAStateSpace()->GetState(pos2) << GetDNAStateSpace()->GetState(pos3) << '\n';
-		if (code == Universal)	{
+		if (code == Universal)
+		{
 			cerr << "universal\n";
 		}
-		else if (code == MtMam)	{
+		else if (code == MtMam)
+		{
 			cerr << "mt mam\n";
 		}
-		else if (code == MtInv)	{
+		else if (code == MtInv)
+		{
 			cerr << "mt inv\n";
 		}
 		cerr << "code not recognized\n";
 		exit(1);
 	}
 	return l;
-
 }
 
-int CodonStateSpace::GetDifferingPosition(int i, int j)	{
+int CodonStateSpace::GetDifferingPosition(int i, int j)
+{
 
 	// identical
-	if ((GetCodonPosition(0,i) == GetCodonPosition(0,j)) && (GetCodonPosition(1,i) == GetCodonPosition(1,j)) && (GetCodonPosition(2,i) == GetCodonPosition(2,j)))	{
+	if ((GetCodonPosition(0, i) == GetCodonPosition(0, j)) && (GetCodonPosition(1, i) == GetCodonPosition(1, j)) && (GetCodonPosition(2, i) == GetCodonPosition(2, j)))
+	{
 		return -1;
 	}
-	if (GetCodonPosition(0,i) != GetCodonPosition(0,j))	{
-		if ((GetCodonPosition(1,i) == GetCodonPosition(1,j)) && (GetCodonPosition(2,i) == GetCodonPosition(2,j)))	{
+	if (GetCodonPosition(0, i) != GetCodonPosition(0, j))
+	{
+		if ((GetCodonPosition(1, i) == GetCodonPosition(1, j)) && (GetCodonPosition(2, i) == GetCodonPosition(2, j)))
+		{
 			return 0;
 		}
-		else	{
+		else
+		{
 			return 3;
 		}
 	}
-	if (GetCodonPosition(1,i) != GetCodonPosition(1,j))	{
-		if ((GetCodonPosition(0,i) == GetCodonPosition(0,j)) && (GetCodonPosition(2,i) == GetCodonPosition(2,j)))	{
+	if (GetCodonPosition(1, i) != GetCodonPosition(1, j))
+	{
+		if ((GetCodonPosition(0, i) == GetCodonPosition(0, j)) && (GetCodonPosition(2, i) == GetCodonPosition(2, j)))
+		{
 			return 1;
 		}
-		else	{
+		else
+		{
 			return 3;
 		}
 	}
-	if (GetCodonPosition(2,i) != GetCodonPosition(2,j))	{
-		if ((GetCodonPosition(1,i) == GetCodonPosition(1,j)) && (GetCodonPosition(0,i) == GetCodonPosition(0,j)))	{
+	if (GetCodonPosition(2, i) != GetCodonPosition(2, j))
+	{
+		if ((GetCodonPosition(1, i) == GetCodonPosition(1, j)) && (GetCodonPosition(0, i) == GetCodonPosition(0, j)))
+		{
 			return 2;
 		}
-		else	{
+		else
+		{
 			return 3;
 		}
 	}
 	return 3;
 }
 
-int CodonStateSpace::GetDegeneracy(int codon)	{
+int CodonStateSpace::GetDegeneracy(int codon)
+{
 
-	if (!degeneracy.size())	{
+	if (!degeneracy.size())
+	{
 		MakeDegeneracyMap();
 	}
-	if (codon == -1)	{
+	if (codon == -1)
+	{
 		return -1;
 	}
 	return degeneracy[codon];
 };
 
-int CodonStateSpace::GetDegeneracyAA(int aa)	{
+int CodonStateSpace::GetDegeneracyAA(int aa)
+{
 
-	if (!degeneracy.size())	{
+	if (!degeneracy.size())
+	{
 		MakeDegeneracyMap();
 	}
-	if (aa == -1)	{
+	if (aa == -1)
+	{
 		return -1;
 	}
 	return degeneracyAA[aa];
 };
 
-void CodonStateSpace::MakeDegeneracyMap()	{
+void CodonStateSpace::MakeDegeneracyMap()
+{
 
-	for (int aa = 0; aa < Naa; aa++){
+	for (int aa = 0; aa < Naa; aa++)
+	{
 		int deg = 0;
-		for (int codon = 0; codon < Nstate; codon ++){
-			if (aa == Translation(codon)){
-				deg ++;
+		for (int codon = 0; codon < Nstate; codon++)
+		{
+			if (aa == Translation(codon))
+			{
+				deg++;
 			}
-
 		}
-		for (int codon = 0; codon < Nstate; codon ++){
+		for (int codon = 0; codon < Nstate; codon++)
+		{
 			degeneracy[codon] = deg;
 		}
 		degeneracyAA[aa] = deg;
 	}
+
+	int sum = 0;
+	for (auto const &pair : degeneracyAA)
+	{
+		sum += pair.second;
+	}
+	degeneracy_sum = sum;
 };
 
-int CodonStateSpace::IsNonCTNearest(int a, int b)	{
+int CodonStateSpace::IsNonCTNearest(int a, int b)
+{
 
 	int noct = 1;
 	int nn = 0;
-	for (int c1 = 0; c1 <GetNstate(); c1++)	{
-		if (Translation(c1) == a)	{
-			for (int c2 = 0; c2 <GetNstate(); c2++)	{
-				if (Translation(c2) == b)	{
-					int pos = GetDifferingPosition(c1,c2);
-					if (pos < 3)	{
+	for (int c1 = 0; c1 < GetNstate(); c1++)
+	{
+		if (Translation(c1) == a)
+		{
+			for (int c2 = 0; c2 < GetNstate(); c2++)
+			{
+				if (Translation(c2) == b)
+				{
+					int pos = GetDifferingPosition(c1, c2);
+					if (pos < 3)
+					{
 						nn = true;
-						int n1 = GetCodonPosition(pos,c1);
-						int n2 = GetCodonPosition(pos,c2);
-						if (((n1 == 1) && (n2 == 3)) || ((n1 == 3) && (n2 == 1)))	{
+						int n1 = GetCodonPosition(pos, c1);
+						int n2 = GetCodonPosition(pos, c2);
+						if (((n1 == 1) && (n2 == 3)) || ((n1 == 3) && (n2 == 1)))
+						{
 							noct = false;
 						}
 					}
@@ -290,7 +359,8 @@ int CodonStateSpace::IsNonCTNearest(int a, int b)	{
 			}
 		}
 	}
-	if (! nn)	{
+	if (!nn)
+	{
 		return -1;
 	}
 	return noct;
@@ -344,6 +414,3 @@ string CodonStateSpace:TranslateDNASequenceWithStops(string dnaseq)	{
 	return s.str();
 }
 */
-
-
-
