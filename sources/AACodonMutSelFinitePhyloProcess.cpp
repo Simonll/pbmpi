@@ -612,9 +612,10 @@ void AACodonMutSelFinitePhyloProcess::ReadPB(int argc, char *argv[])
 	{
 		ReadMapStats(name, burnin, every, until);
 	}
-	// else if (mapstats == 2)	{
-	// 	ReadMapDiStats(name,burnin,every,until);
-	// }
+	else if (mapstats == 2)
+	{
+		ReadMapDiStats(name, burnin, every, until);
+	}
 	else if (ppred)
 	{
 		PostPred(ppred, name, burnin, every, until, rateprior, profileprior, rootprior, savetrees);
@@ -622,6 +623,223 @@ void AACodonMutSelFinitePhyloProcess::ReadPB(int argc, char *argv[])
 	else
 	{
 		Read(name, burnin, every, until);
+	}
+}
+
+std::vector<std::pair<int, int>> generatePairs(int N)
+{
+	std::vector<std::pair<int, int>> pairs;
+
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			pairs.emplace_back(i, j);
+		}
+	}
+
+	return pairs;
+}
+
+void AACodonMutSelFinitePhyloProcess::SlaveWriteSuffDiStat()
+{
+
+	int len;
+	MPI_Bcast(&len, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	unsigned char *bvector = new unsigned char[len];
+	MPI_Bcast(bvector, len, MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
+	int iter;
+	MPI_Bcast(&iter, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	int type;
+	MPI_Bcast(&type, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+	ostringstream os;
+	for (int i = 0; i < len; i++)
+	{
+		os << bvector[i];
+	}
+	string name = os.str();
+	delete[] bvector;
+
+	int NSubSynTsCpG = 0;
+	double T_CG = 0;
+
+	std::map<std::pair<int, int>, int> branchpaircount;
+	std::map<int, double> branchwaitingtime;
+
+	std::map<std::tuple<std::pair<int, int>, std::pair<int, int>>, int> siteinter_branchpaircount;
+	std::map<std::pair<int, int>, double> siteinter_branchwaitingtime;
+	for (int i = sitemin; i < sitemax; i++)
+	{
+		WriteSuffStat(GetRoot(), i, iter, type, branchpaircount, branchwaitingtime);
+		WriteSuffDiStat(GetRoot(), i, iter, type, siteinter_branchpaircount, siteinter_branchwaitingtime);
+	}
+	stringstream osfmap;
+	// osfmap << name << "_" << i << ".TsCpGRate";
+	osfmap << name << ".TsCpGRate";
+	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
+	if (type == 0)
+	{
+		osmap << iter << "\t"
+			  << "post";
+	}
+	else
+	{
+		osmap << iter << "\t"
+			  << "pred";
+	}
+	int k = GetStateSpace()->GetState("TCG");
+	int l = GetStateSpace()->GetState("TCA");
+	NSubSynTsCpG += branchpaircount[std::pair<int, int>(k, l)];
+	T_CG += branchwaitingtime[k];
+
+	k = GetStateSpace()->GetState("CCG");
+	l = GetStateSpace()->GetState("CCA");
+	NSubSynTsCpG += branchpaircount[std::pair<int, int>(k, l)];
+	T_CG += branchwaitingtime[k];
+
+	k = GetStateSpace()->GetState("ACG");
+	l = GetStateSpace()->GetState("ACA");
+	NSubSynTsCpG += branchpaircount[std::pair<int, int>(k, l)];
+	T_CG += branchwaitingtime[k];
+
+	k = GetStateSpace()->GetState("GCG");
+	l = GetStateSpace()->GetState("GCA");
+	NSubSynTsCpG += branchpaircount[std::pair<int, int>(k, l)];
+	T_CG += branchwaitingtime[k];
+
+	std::vector<std::pair<int, int>> codon_pairs = generatePairs(AACodonMutSelProfileProcess::statespace->GetNstate());
+
+	for (const auto &pair_from : codon_pairs)
+	{
+		for (const auto &pair_to : codon_pairs)
+		{
+			int codon_a_from = pair_from.first;
+			int codon_b_from = pair_from.second;
+			int codon_a_to = pair_to.first;
+			int codon_b_to = pair_to.second;
+
+			if ((AACodonMutSelProfileProcess::statespace->GetCodonPosition(2, codon_a_from) == 1) && (AACodonMutSelProfileProcess::statespace->GetCodonPosition(0, codon_b_from) == 2))
+			{
+				if ((codon_a_from != codon_a_to) && (codon_b_from == codon_b_to))
+				{
+
+					int pos = AACodonMutSelProfileProcess::statespace->GetDifferingPosition(codon_a_from, codon_a_to);
+					if ((pos != -1) && (pos != 3))
+					{
+
+						if (AACodonMutSelProfileProcess::statespace->GetCodonPosition(2, codon_a_to) == 3)
+						{
+							if (AACodonMutSelProfileProcess::statespace->Synonymous(codon_a_from, codon_a_to))
+							{
+								// NNC|GNN > NNT|GNN
+								NSubSynTsCpG += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
+								T_CG += siteinter_branchwaitingtime[pair<int, int>(codon_a_from, codon_b_from)];
+							}
+						}
+					}
+				}
+				else if ((codon_a_from == codon_a_to) && (codon_b_from != codon_b_to))
+				{
+					int pos = AACodonMutSelProfileProcess::statespace->GetDifferingPosition(codon_b_from, codon_b_to);
+					if ((pos != -1) && (pos != 3))
+					{
+						if (AACodonMutSelProfileProcess::statespace->GetCodonPosition(2, codon_b_to) == 0)
+						{
+							if (AACodonMutSelProfileProcess::statespace->Synonymous(codon_b_from, codon_b_to))
+							{
+								// NNC|GNN > NNC|ANN
+								NSubSynTsCpG += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
+								T_CG += siteinter_branchwaitingtime[pair<int, int>(codon_a_from, codon_b_from)];
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	osmap << "\t" << NSubSynTsCpG;
+	osmap << "\t"
+		  << T_CG;
+	osmap << "\n";
+	osmap.close();
+}
+
+void AACodonMutSelFinitePhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
+{
+	ifstream is((name + ".chain").c_str());
+	if (!is)
+	{
+		cerr << "error: no .chain file found\n";
+		exit(1);
+	}
+	cerr << "burnin : " << burnin << "\n";
+	cerr << "until : " << until << '\n';
+	// iter=0;
+	while ((GetIter() < until) && (GetIter() < burnin))
+	{
+		FromStream(is);
+		IncrementIter();
+	}
+	int samplesize = 0;
+
+	stringstream osfreftree;
+	osfreftree << name << ".reftreemap";
+	ofstream osreftree((osfreftree.str()).c_str());
+	WriteTreeBranchName(osreftree, GetRoot());
+	osreftree.close();
+	stringstream osfmap_;
+	osfmap_ << name << ".TsCpGRate";
+	ofstream osmap_((osfmap_.str()).c_str());
+	osmap_ << "mcmcID"
+		   << "\t"
+		   << "type";
+	osmap_ << "\t"
+		   << "T_CpG"
+		   << "\t"
+		   << "NSubSynTsCpG";
+	osmap_ << "\n";
+	osmap_.close();
+
+	while (GetIter() < until)
+	{
+		cerr << ".";
+		cerr.flush();
+		samplesize++;
+		FromStream(is);
+
+		// quick update and mapping on the fly
+		for (int i = 0; i < 10; i++)
+		{
+			MESSAGE signal = BCAST_TREE;
+			MPI_Bcast(&signal, 1, MPI_INT, 0, MPI_COMM_WORLD);
+			GlobalBroadcastTree();
+			GlobalUpdateConditionalLikelihoods();
+			GlobalCollapse();
+			GlobalUpdateSiteProfileSuffStat();
+			// write posterior mappings
+			GlobalWriteSuffDiStat(name, GetIter(), 0);
+
+			// Posterior Predictive Mappings
+			GlobalUnfold();
+			GlobalUnclamp();
+			GlobalCollapse();
+			GlobalUpdateSiteProfileSuffStat();
+			GlobalSetDataFromLeaves();
+
+			// write posterior predictive mappings
+			GlobalWriteSuffDiStat(name, GetIter(), 1);
+			GlobalRestoreData();
+			GlobalUnfold();
+		}
+		IncrementIter();
+		int nrep = 1;
+		while ((GetIter() < until) && (nrep < every))
+		{
+			FromStream(is);
+			IncrementIter();
+			nrep++;
+		}
 	}
 }
 

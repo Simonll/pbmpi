@@ -16,20 +16,21 @@ along with PhyloBayes. If not, see <http://www.gnu.org/licenses/>.
 #ifndef AACODONMUTSELFINITEPHYLO_H
 #define AACODONMUTSELFINITEPHYLO_H
 
-//#include <cassert>
+// #include <cassert>
 #include "AACodonMutSelFiniteSubstitutionProcess.h"
 #include "GeneralPathSuffStatMatrixPhyloProcess.h"
 #include "GammaBranchProcess.h"
-//#include "Parallel.h"
+// #include "Parallel.h"
 
-class AACodonMutSelFinitePhyloProcess : public virtual AACodonMutSelFiniteSubstitutionProcess, public virtual GeneralPathSuffStatMatrixPhyloProcess, public virtual GammaBranchProcess	{
+class AACodonMutSelFinitePhyloProcess : public virtual AACodonMutSelFiniteSubstitutionProcess, public virtual GeneralPathSuffStatMatrixPhyloProcess, public virtual GammaBranchProcess
+{
 
 	// s'inspirer de GeneralPathSuffStatGTRPhyloProcess
 	// et GeneralPathSuffStatRASCATGTRPhyloProcess
 
-	public:
-
-	AACodonMutSelFinitePhyloProcess(string indatafile, string treefile, GeneticCodeType incodetype, int innmodemax, int ncat, int infixncomp, int inempmix, string inmixtype, int infixtopo, int infixbl, int inNSPR, int inNNNI, int infixcodonprofile, int infixomega, int inomegaprior, int indirweightprior, int indc, int me, int np)	{
+public:
+	AACodonMutSelFinitePhyloProcess(string indatafile, string treefile, GeneticCodeType incodetype, int innmodemax, int ncat, int infixncomp, int inempmix, string inmixtype, int infixtopo, int infixbl, int inNSPR, int inNNNI, int infixcodonprofile, int infixomega, int inomegaprior, int indirweightprior, int indc, int me, int np)
+	{
 		myid = me;
 		nprocs = np;
 		dc = indc;
@@ -44,57 +45,69 @@ class AACodonMutSelFinitePhyloProcess : public virtual AACodonMutSelFiniteSubsti
 
 		datafile = indatafile;
 		codetype = incodetype;
-		SequenceAlignment* nucdata = new FileSequenceAlignment(datafile,0,myid);
-		CodonSequenceAlignment* codondata = new CodonSequenceAlignment(nucdata,true,codetype);
-		CodonStateSpace* statespace = codondata->GetCodonStateSpace();
-		if (dc)	{
+		SequenceAlignment *nucdata = new FileSequenceAlignment(datafile, 0, myid);
+		CodonSequenceAlignment *codondata = new CodonSequenceAlignment(nucdata, true, codetype);
+		CodonStateSpace *statespace = codondata->GetCodonStateSpace();
+		if (dc)
+		{
 			codondata->DeleteAAConstantSites();
 		}
-		const TaxonSet* taxonset = codondata->GetTaxonSet();
+		const TaxonSet *taxonset = codondata->GetTaxonSet();
 
-		if (treefile == "None")	{
+		if (treefile == "None")
+		{
 			tree = new Tree(taxonset);
-			if (myid == 0)	{
+			if (myid == 0)
+			{
 				tree->MakeRandomTree();
 				GlobalBroadcastTree();
 			}
-			else	{
+			else
+			{
 				SlaveBroadcastTree();
 			}
 		}
-		else	{
+		else
+		{
 			tree = new Tree(treefile);
 		}
-		tree->RegisterWith(taxonset,myid);
-		
-		int insitemin = -1,insitemax = -1;
-		if (myid > 0) {
-			int width = codondata->GetNsite()/(nprocs-1);
-			insitemin = (myid-1)*width;
-			if (myid == (nprocs-1)) {
+		tree->RegisterWith(taxonset, myid);
+
+		int insitemin = -1, insitemax = -1;
+		if (myid > 0)
+		{
+			int width = codondata->GetNsite() / (nprocs - 1);
+			insitemin = (myid - 1) * width;
+			if (myid == (nprocs - 1))
+			{
 				insitemax = codondata->GetNsite();
 			}
-			else {
-				insitemax = myid*width;
+			else
+			{
+				insitemax = myid * width;
 			}
 		}
 
-        SetNmodeMax(innmodemax);
+		SetNmodeMax(innmodemax);
 
-		Create(tree,codondata,ncat,infixncomp,inempmix,inmixtype,insitemin,insitemax,statespace,fixcodonprofile,fixomega);
-		if (myid == 0)	{
-			if (fixbl)	{
+		Create(tree, codondata, ncat, infixncomp, inempmix, inmixtype, insitemin, insitemax, statespace, fixcodonprofile, fixomega);
+		if (myid == 0)
+		{
+			if (fixbl)
+			{
 				SampleRate();
 				SampleProfile();
 			}
-			else	{
+			else
+			{
 				Sample();
 			}
 			GlobalUnfold();
 		}
 	}
 
-	AACodonMutSelFinitePhyloProcess(istream& is, int me, int np)	{
+	AACodonMutSelFinitePhyloProcess(istream &is, int me, int np)
+	{
 
 		myid = me;
 		nprocs = np;
@@ -102,138 +115,158 @@ class AACodonMutSelFinitePhyloProcess : public virtual AACodonMutSelFiniteSubsti
 		FromStreamHeader(is);
 		is >> datafile;
 		is >> codetype;
-		if (atof(version.substr(0,3).c_str()) > 1.8)	{
-            int nmax;
-            is >> nmax;
-            SetNmodeMax(nmax);
-        }
+		if (atof(version.substr(0, 3).c_str()) > 1.8)
+		{
+			int nmax;
+			is >> nmax;
+			SetNmodeMax(nmax);
+		}
 		int infixncomp;
 		int intmp;
 		int inempmix;
 		string inmixtype;
 		is >> intmp >> inempmix >> inmixtype;
-        int ncat = 1;
-        if (intmp)  {
-            infixncomp = 1;
-            ncat = intmp;
-        }
-        else    {
-            infixncomp = 0;
-        }
+		int ncat = 1;
+		if (intmp)
+		{
+			infixncomp = 1;
+			ncat = intmp;
+		}
+		else
+		{
+			infixncomp = 0;
+		}
 		is >> fixtopo;
 		is >> fixbl;
-		if (atof(version.substr(0,3).c_str()) > 1.4)	{
+		if (atof(version.substr(0, 3).c_str()) > 1.4)
+		{
 			is >> NSPR;
 			is >> NNNI;
 		}
-		else	{
+		else
+		{
 			NSPR = 10;
 			NNNI = 0;
 		}
 		is >> fixcodonprofile;
 		is >> fixomega;
-		if (atof(version.substr(0,3).c_str()) > 1.5)	{
+		if (atof(version.substr(0, 3).c_str()) > 1.5)
+		{
 			is >> omegaprior;
 		}
-		else	{
+		else
+		{
 			omegaprior = 0;
 		}
 		is >> dirweightprior;
 		is >> dc;
-		SequenceAlignment* nucdata = new FileSequenceAlignment(datafile,0,myid);
-		CodonSequenceAlignment* codondata = new CodonSequenceAlignment(nucdata,true,codetype);
-		CodonStateSpace* statespace = codondata->GetCodonStateSpace();
-		const TaxonSet* taxonset = codondata->GetTaxonSet();
+		SequenceAlignment *nucdata = new FileSequenceAlignment(datafile, 0, myid);
+		CodonSequenceAlignment *codondata = new CodonSequenceAlignment(nucdata, true, codetype);
+		CodonStateSpace *statespace = codondata->GetCodonStateSpace();
+		const TaxonSet *taxonset = codondata->GetTaxonSet();
 
-		int insitemin = -1,insitemax = -1;
-		if (myid > 0) {
-			int width = codondata->GetNsite()/(nprocs-1);
-			insitemin = (myid-1)*width;
-			if (myid == (nprocs-1)) {
+		int insitemin = -1, insitemax = -1;
+		if (myid > 0)
+		{
+			int width = codondata->GetNsite() / (nprocs - 1);
+			insitemin = (myid - 1) * width;
+			if (myid == (nprocs - 1))
+			{
 				insitemax = codondata->GetNsite();
 			}
-			else {
-				insitemax = myid*width;
+			else
+			{
+				insitemax = myid * width;
 			}
 		}
 
 		tree = new Tree(taxonset);
-		if (myid == 0)	{
+		if (myid == 0)
+		{
 			tree->ReadFromStream(is);
 			GlobalBroadcastTree();
 		}
-		else	{
+		else
+		{
 			SlaveBroadcastTree();
 		}
-		tree->RegisterWith(taxonset,0);
+		tree->RegisterWith(taxonset, 0);
 
-		Create(tree,codondata,ncat,infixncomp,inempmix,inmixtype,insitemin,insitemax,statespace,fixcodonprofile,fixomega);
+		Create(tree, codondata, ncat, infixncomp, inempmix, inmixtype, insitemin, insitemax, statespace, fixcodonprofile, fixomega);
 
-		if (myid == 0)	{
+		if (myid == 0)
+		{
 			FromStream(is);
 			GlobalUnfold();
 		}
 	}
 
-	virtual ~AACodonMutSelFinitePhyloProcess()	{
+	virtual ~AACodonMutSelFinitePhyloProcess()
+	{
 		Delete();
 	}
 
 	// MPI: these two functions are responsible for broadcasting/receiving the current state of the parameter vector
 	// are model dependent
 	// should be implemented in .cpp file
-    virtual void SlaveExecute(MESSAGE);
+	virtual void SlaveExecute(MESSAGE);
 
 	void SlaveComputeCVScore();
 	void SlaveComputeSiteLogL();
-    void GlobalSetTestData();
-    void SlaveSetTestData();
+	void GlobalSetTestData();
+	void SlaveSetTestData();
 
 	void SlaveUpdateParameters();
 	void GlobalUpdateParameters();
 
-	double GetLogProb()	{
+	double GetLogProb()
+	{
 		return GetLogPrior() + GetLogLikelihood();
 	}
 
-	double GetLogLikelihood()	{
+	double GetLogLikelihood()
+	{
 		return logL;
 	}
 
-	void TraceHeader(ostream& os)	{
+	void TraceHeader(ostream &os)
+	{
 		os << "iter\ttime\tpruning\tlnL\tlength\tcodonent\tomega\tNmode\tstatent\tstatalpha\tnucsA\tnucsC\tnucsG\tnucsT\tnucrrAC\tnucrrAG\tnucrrAT\tnucrrCG\tnucrrCT\tnucrrGT";
 		os << "\n";
-		//os << "lnL\tlength\tNmode\tNocc\tnucsA\tnucsC\tnucsT\tnucsG\tnucrrAC\tnucrrAG\tnucrrAT\tnucrrCG\tnucrrCT\tnucrrGT\tstatent";
-		//os << "\ttotaltime";
-		//os << "\tpruning\tsuffstat\tunfold\tcollapse";
-		//os << "\n";
+		// os << "lnL\tlength\tNmode\tNocc\tnucsA\tnucsC\tnucsT\tnucsG\tnucrrAC\tnucrrAG\tnucrrAT\tnucrrCG\tnucrrCT\tnucrrGT\tstatent";
+		// os << "\ttotaltime";
+		// os << "\tpruning\tsuffstat\tunfold\tcollapse";
+		// os << "\n";
 	}
 
-	void Trace(ostream& os)	{
+	void Trace(ostream &os)
+	{
 		UpdateOccupancyNumbers();
 
-		//os << ((int) (chronototal.GetTime() / 1000));
+		// os << ((int) (chronototal.GetTime() / 1000));
 		os << GetIndex();
-		if (chronototal.GetTime())	{
+		if (chronototal.GetTime())
+		{
 			os << '\t' << chronototal.GetTime() / 1000;
-			os << '\t' << ((int) (propchrono.GetTime() / chronototal.GetTime() * 100));
+			os << '\t' << ((int)(propchrono.GetTime() / chronototal.GetTime() * 100));
 			chronototal.Reset();
 			propchrono.Reset();
-			//os << '\t' << ((double) ((int) (chronototal.GetTime() / (GetSize())))) / 1000;
-			//os << '\t' << ((int) (100 * chronopruning.GetTime() /chronototal.GetTime()));
+			// os << '\t' << ((double) ((int) (chronototal.GetTime() / (GetSize())))) / 1000;
+			// os << '\t' << ((int) (100 * chronopruning.GetTime() /chronototal.GetTime()));
 		}
-		else	{
+		else
+		{
 			os << '\t' << 0;
 			os << '\t' << 0;
 		}
 
-		os << '\t' <<  GetLogLikelihood();
+		os << '\t' << GetLogLikelihood();
 		os << '\t' << GetTotalLength();
-		//os << '\t' << GetAlpha();
+		// os << '\t' << GetAlpha();
 		os << '\t' << GetCodonProfileEntropy();
 		os << '\t' << GetOmega();
 		os << '\t' << GetNDisplayedComponent();
-		//os << '\t' << GetNOccupiedComponent();
+		// os << '\t' << GetNOccupiedComponent();
 		os << '\t' << GetStatEnt();
 		os << '\t' << GetMeanDirWeight();
 		os << '\t' << GetNucStat(0) << '\t' << GetNucStat(1) << '\t' << GetNucStat(2) << '\t' << GetNucStat(3);
@@ -268,67 +301,78 @@ class AACodonMutSelFinitePhyloProcess : public virtual AACodonMutSelFiniteSubsti
 		*/
 	}
 
-	void ToStreamHeader(ostream& os)	{
+	void ToStreamHeader(ostream &os)
+	{
 		PhyloProcess::ToStreamHeader(os);
 		os << datafile << '\n';
 		os << codetype << '\n';
-		if (atof(version.substr(0,3).c_str()) > 1.8)	{
-            os << GetNmodeMax() << '\n';
-        }
-        int tmp = 0;
-        if (fixncomp)   {
-            tmp = GetNcomponent();
-        }
-        else    {
-            tmp = 0;
-        }
+		if (atof(version.substr(0, 3).c_str()) > 1.8)
+		{
+			os << GetNmodeMax() << '\n';
+		}
+		int tmp = 0;
+		if (fixncomp)
+		{
+			tmp = GetNcomponent();
+		}
+		else
+		{
+			tmp = 0;
+		}
 		os << tmp << '\t' << empmix << '\t' << mixtype << '\n';
 		// os << fixncomp << '\t' << empmix << '\t' << mixtype << '\n';
 		os << fixtopo << '\n';
 		os << fixbl << '\n';
-		if (atof(version.substr(0,3).c_str()) > 1.4)	{
-            os << NSPR << '\t' << NNNI << '\n';
-        }
+		if (atof(version.substr(0, 3).c_str()) > 1.4)
+		{
+			os << NSPR << '\t' << NNNI << '\n';
+		}
 		os << fixcodonprofile << '\n';
 		os << fixomega << '\n';
-		if (atof(version.substr(0,3).c_str()) > 1.5)	{
-            os << omegaprior << '\n';
-        }
+		if (atof(version.substr(0, 3).c_str()) > 1.5)
+		{
+			os << omegaprior << '\n';
+		}
 		os << dirweightprior << '\n';
 		os << dc << '\n';
 		GetTree()->ToStream(os);
 	}
-	void ToStream(ostream& os)	{
+	void ToStream(ostream &os)
+	{
 		GammaBranchProcess::ToStream(os);
 		AACodonMutSelFiniteProfileProcess::ToStream(os);
 	}
 
-	void FromStream(istream& is)	{
+	void FromStream(istream &is)
+	{
 		GammaBranchProcess::FromStream(is);
 		AACodonMutSelFiniteProfileProcess::FromStream(is);
 		GlobalUpdateParameters();
 	}
 
-	virtual void ReadPB(int argc, char* argv[]);
+	virtual void ReadPB(int argc, char *argv[]);
 	void Read(string name, int burnin, int every, int until);
 	void ReadMapStats(string name, int burnin, int every, int until);
-	void ReadMapCpGMutRate(string name, int burnin, int every, int until);
+	void ReadMapDiStats(string name, int burnin, int every, int until);
 	int CountNonSynMapping(int i);
 	int CountNonSynMapping();
 	int GlobalNonSynMapping();
 	virtual void SlaveNonSynMapping();
 	void SlaveWriteSuffStat();
-	void WriteSuffStat(const Link* from, int i, int iter, int type, std::map< std::pair<int,int>, int>& branchpaircount, std::map<int,double>& branchwaitingtime);
-	double Move(double tuning = 1.0)	{
+	void SlaveWriteSuffDiStat();
+	double Move(double tuning = 1.0)
+	{
 		chronototal.Start();
 		propchrono.Start();
-		if (! fixbl)	{
+		if (!fixbl)
+		{
 			BranchLengthMove(tuning);
 			BranchLengthMove(0.1 * tuning);
 		}
-		if (! fixtopo)	{
-			//GibbsSPR(50);
-			MoveTopo(NSPR,NNNI);
+		if (!fixtopo)
+		{
+			// GibbsSPR(50);
+			MoveTopo(NSPR, NNNI);
 		}
 		propchrono.Stop();
 
@@ -337,13 +381,14 @@ class AACodonMutSelFinitePhyloProcess : public virtual AACodonMutSelFiniteSubsti
 		chronocollapse.Start();
 		GlobalCollapse();
 		chronocollapse.Stop();
-		if (! fixbl)	{
-			GammaBranchProcess::Move(0.1 * tuning,10);
-			GammaBranchProcess::Move(tuning,10);
+		if (!fixbl)
+		{
+			GammaBranchProcess::Move(0.1 * tuning, 10);
+			GammaBranchProcess::Move(tuning, 10);
 		}
 
 		GlobalUpdateParameters();
-		AACodonMutSelFiniteProfileProcess::Move(tuning,1,10);
+		AACodonMutSelFiniteProfileProcess::Move(tuning, 1, 10);
 		chronosuffstat.Stop();
 
 		chronounfold.Start();
@@ -354,21 +399,22 @@ class AACodonMutSelFinitePhyloProcess : public virtual AACodonMutSelFiniteSubsti
 		return 1;
 	}
 
-
-	protected:
-
-	virtual void Create(Tree* intree, SequenceAlignment* indata, int sitemin, int sitemax)	{
+protected:
+	virtual void Create(Tree *intree, SequenceAlignment *indata, int sitemin, int sitemax)
+	{
 		cerr << "In two-argument Create of AACodonMutSelFinitePhyloProcess.  Should not be here.\n";
 		exit(1);
 	}
 
-	virtual void Create(Tree* intree, SequenceAlignment* indata, int ncat, int infixncomp, int inempmix, string inmixtype, int sitemin, int sitemax, CodonStateSpace* instatespace, int infixcodonprofile, int infixomega)	{
-		AACodonMutSelFiniteSubstitutionProcess::Create(indata->GetNsite(),Naa,ncat,infixncomp, inempmix, inmixtype,sitemin,sitemax,instatespace,infixcodonprofile,infixomega);
-		GeneralPathSuffStatMatrixPhyloProcess::Create(intree,indata,Naa,sitemin,sitemax);
+	virtual void Create(Tree *intree, SequenceAlignment *indata, int ncat, int infixncomp, int inempmix, string inmixtype, int sitemin, int sitemax, CodonStateSpace *instatespace, int infixcodonprofile, int infixomega)
+	{
+		AACodonMutSelFiniteSubstitutionProcess::Create(indata->GetNsite(), Naa, ncat, infixncomp, inempmix, inmixtype, sitemin, sitemax, instatespace, infixcodonprofile, infixomega);
+		GeneralPathSuffStatMatrixPhyloProcess::Create(intree, indata, Naa, sitemin, sitemax);
 		GammaBranchProcess::Create(intree);
 	}
 
-	virtual void Delete()	{
+	virtual void Delete()
+	{
 		GeneralPathSuffStatMatrixPhyloProcess::Delete();
 		AACodonMutSelFiniteSubstitutionProcess::Delete();
 		GammaBranchProcess::Delete();
@@ -377,19 +423,15 @@ class AACodonMutSelFinitePhyloProcess : public virtual AACodonMutSelFiniteSubsti
 	int fixcodonprofile;
 	int fixomega;
 	GeneticCodeType codetype;
-	CodonStateSpace* statespace;
+	CodonStateSpace *statespace;
 
 	Chrono chronopruning;
 	Chrono chronosuffstat;
 	Chrono chronototal;
 	Chrono chronocollapse;
 	Chrono chronounfold;
-
 };
 
 // enfin, le PhyloProcess ainsi construit peut etre instancie dans le main.cpp
 
-
-
 #endif
-
