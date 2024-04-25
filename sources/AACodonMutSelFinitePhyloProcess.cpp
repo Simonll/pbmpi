@@ -661,9 +661,6 @@ void AACodonMutSelFinitePhyloProcess::SlaveWriteSuffDiStat()
 	string name = os.str();
 	delete[] bvector;
 
-	int NSubSynTsCpG = 0;
-	double T_CG = 0;
-
 	std::map<std::pair<int, int>, int> branchpaircount;
 	std::map<int, double> branchwaitingtime;
 
@@ -688,25 +685,32 @@ void AACodonMutSelFinitePhyloProcess::SlaveWriteSuffDiStat()
 		osmap << iter << "\t"
 			  << "pred";
 	}
+
+	int NSubSynTsCpG23 = 0;
+	double T_CG23 = 0;
+
 	int k = GetStateSpace()->GetState("TCG");
 	int l = GetStateSpace()->GetState("TCA");
-	NSubSynTsCpG += branchpaircount[std::pair<int, int>(k, l)];
-	T_CG += branchwaitingtime[k];
+	NSubSynTsCpG23 += branchpaircount[std::pair<int, int>(k, l)];
+	T_CG23 += branchwaitingtime[k];
 
 	k = GetStateSpace()->GetState("CCG");
 	l = GetStateSpace()->GetState("CCA");
-	NSubSynTsCpG += branchpaircount[std::pair<int, int>(k, l)];
-	T_CG += branchwaitingtime[k];
+	NSubSynTsCpG23 += branchpaircount[std::pair<int, int>(k, l)];
+	T_CG23 += branchwaitingtime[k];
 
 	k = GetStateSpace()->GetState("ACG");
 	l = GetStateSpace()->GetState("ACA");
-	NSubSynTsCpG += branchpaircount[std::pair<int, int>(k, l)];
-	T_CG += branchwaitingtime[k];
+	NSubSynTsCpG23 += branchpaircount[std::pair<int, int>(k, l)];
+	T_CG23 += branchwaitingtime[k];
 
 	k = GetStateSpace()->GetState("GCG");
 	l = GetStateSpace()->GetState("GCA");
-	NSubSynTsCpG += branchpaircount[std::pair<int, int>(k, l)];
-	T_CG += branchwaitingtime[k];
+	NSubSynTsCpG23 += branchpaircount[std::pair<int, int>(k, l)];
+	T_CG23 += branchwaitingtime[k];
+
+	int NSubSynTsCpG31 = 0;
+	double T_CG31 = 0;
 
 	std::vector<std::pair<int, int>> codon_pairs = generatePairs(AACodonMutSelProfileProcess::statespace->GetNstate());
 
@@ -733,8 +737,8 @@ void AACodonMutSelFinitePhyloProcess::SlaveWriteSuffDiStat()
 							if (AACodonMutSelProfileProcess::statespace->Synonymous(codon_a_from, codon_a_to))
 							{
 								// NNC|GNN > NNT|GNN
-								NSubSynTsCpG += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
-								T_CG += siteinter_branchwaitingtime[pair<int, int>(codon_a_from, codon_b_from)];
+								NSubSynTsCpG31 += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
+								T_CG31 += siteinter_branchwaitingtime[pair<int, int>(codon_a_from, codon_b_from)];
 							}
 						}
 					}
@@ -749,8 +753,8 @@ void AACodonMutSelFinitePhyloProcess::SlaveWriteSuffDiStat()
 							if (AACodonMutSelProfileProcess::statespace->Synonymous(codon_b_from, codon_b_to))
 							{
 								// NNC|GNN > NNC|ANN
-								NSubSynTsCpG += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
-								T_CG += siteinter_branchwaitingtime[pair<int, int>(codon_a_from, codon_b_from)];
+								NSubSynTsCpG31 += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
+								T_CG31 += siteinter_branchwaitingtime[pair<int, int>(codon_a_from, codon_b_from)];
 							}
 						}
 					}
@@ -758,9 +762,12 @@ void AACodonMutSelFinitePhyloProcess::SlaveWriteSuffDiStat()
 			}
 		}
 	}
-	osmap << "\t" << NSubSynTsCpG;
+	osmap << "\t" << T_CG23;
 	osmap << "\t"
-		  << T_CG;
+		  << NSubSynTsCpG23;
+	osmap << "\t" << T_CG31;
+	osmap << "\t"
+		  << NSubSynTsCpG31;
 	osmap << "\n";
 	osmap.close();
 }
@@ -795,9 +802,13 @@ void AACodonMutSelFinitePhyloProcess::ReadMapDiStats(string name, int burnin, in
 		   << "\t"
 		   << "type";
 	osmap_ << "\t"
-		   << "T_CpG"
+		   << "T_CpG23"
 		   << "\t"
-		   << "NSubSynTsCpG";
+		   << "NSubSynTsCpG23";
+	osmap_ << "\t"
+		   << "T_CpG31"
+		   << "\t"
+		   << "NSubSynTsCpG31";
 	osmap_ << "\n";
 	osmap_.close();
 
