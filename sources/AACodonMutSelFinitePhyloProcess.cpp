@@ -626,21 +626,6 @@ void AACodonMutSelFinitePhyloProcess::ReadPB(int argc, char *argv[])
 	}
 }
 
-std::vector<std::pair<int, int>> generatePairs(int N)
-{
-	std::vector<std::pair<int, int>> pairs;
-
-	for (int i = 0; i < N; i++)
-	{
-		for (int j = 0; j < N; j++)
-		{
-			pairs.emplace_back(i, j);
-		}
-	}
-
-	return pairs;
-}
-
 void AACodonMutSelFinitePhyloProcess::SlaveWriteSuffDiStat()
 {
 
@@ -712,7 +697,7 @@ void AACodonMutSelFinitePhyloProcess::SlaveWriteSuffDiStat()
 	int NSubSynTsCpG31 = 0;
 	double T_CG31 = 0;
 
-	std::vector<std::pair<int, int>> codon_pairs = generatePairs(AACodonMutSelProfileProcess::statespace->GetNstate());
+	std::vector<std::pair<int, int>> codon_pairs = AACodonMutSelProfileProcess::generatePairs(AACodonMutSelProfileProcess::statespace->GetNstate());
 
 	for (const auto &pair_from : codon_pairs)
 	{
