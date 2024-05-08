@@ -13,78 +13,88 @@ along with PhyloBayes. If not, see <http://www.gnu.org/licenses/>.
 
 **********************/
 
-
 #ifndef AACODONMUTSEL_H
 #define AACODONMUTSEL_H
 
+#include <vector>
 #include "CodonSubMatrix.h"
 #include "CodonSequenceAlignment.h"
 #include "GeneralPathSuffStatMatrixProfileProcess.h"
 
-class AACodonMutSelProfileProcess : public virtual GeneralPathSuffStatMatrixProfileProcess	{
+class AACodonMutSelProfileProcess : public virtual GeneralPathSuffStatMatrixProfileProcess
+{
 
 	// y mettre les variables globales (taux de mutation essentiellement)
 
 	// s'inspirer de GTRProfileProcess et GeneralPathSuffStatGTRProfileProcess
 
-	public:
-
+public:
 	AACodonMutSelProfileProcess() : nucrr(0), nucstat(0), codonprofile(0), omega(0), statespace(0) {}
 	virtual ~AACodonMutSelProfileProcess() {}
 
-	int GetNnucrr()	{
+	int GetNnucrr()
+	{
 		return Nnucrr;
-	}	
+	}
 
-	const double* GetNucRR()	{
-		if (! nucrr)	{
+	const double *GetNucRR()
+	{
+		if (!nucrr)
+		{
 			cerr << "error : getnucrr\n";
 			exit(1);
 		}
 		return nucrr;
 	}
 
-	const double GetNucRR(int i)	{
-		if ( (! nucrr) || (i>GetNnucrr()) || (i<0) )	{
+	const double GetNucRR(int i)
+	{
+		if ((!nucrr) || (i > GetNnucrr()) || (i < 0))
+		{
 			cerr << "error : getnucrr i\n";
 			exit(1);
 		}
 		return nucrr[i];
 	}
 
-	const double* GetNucStat()	{
-		if (! nucstat)	{
+	const double *GetNucStat()
+	{
+		if (!nucstat)
+		{
 			cerr << "error : getnucstat\n";
 			exit(1);
 		}
 		return nucstat;
 	}
 
-	const double GetNucStat(int i)	{
-		if ( (! nucstat) || (i>Nnuc) || (i<0) )	{
+	const double GetNucStat(int i)
+	{
+		if ((!nucstat) || (i > Nnuc) || (i < 0))
+		{
 			cerr << "error : getnucstat i\n";
 			exit(1);
 		}
 		return nucstat[i];
 	}
 
-	const double GetCodonProfileEntry(int i)	{
-		return codonprofile[i];	
+	const double GetCodonProfileEntry(int i)
+	{
+		return codonprofile[i];
 	}
 
 	double GetCodonProfileEntropy();
 
-	double GetOmega()	{
+	double GetOmega()
+	{
 		return *omega;
 	}
 
-	protected:
-
-	virtual void Create(int innsite, int indim, CodonStateSpace* instatespace);
+protected:
+	virtual void Create(int innsite, int indim, CodonStateSpace *instatespace);
 	virtual void Delete();
-	virtual double GetNormalizationFactor()	{return 1.0;}
-	
-	//double GetMinTotWeight() {return GetDim() / (GetDim()/2);}
+	virtual double GetNormalizationFactor() { return 1.0; }
+
+	// double GetMinTotWeight() {return GetDim() / (GetDim()/2);}
 
 	// nuc relative rates
 	virtual double LogNucRRPrior();
@@ -103,20 +113,35 @@ class AACodonMutSelProfileProcess : public virtual GeneralPathSuffStatMatrixProf
 	virtual void SampleOmega();
 
 	// moves on global parameters
-	double MoveNucRR(double tuning); 
-	double MoveNucRR(double tuning, int n); 
+	double MoveNucRR(double tuning);
+	double MoveNucRR(double tuning, int n);
 	double MoveNucStat(double tuning, int n);
-	double MoveCodonProfile(double tuning, int n, int nrep=1);
-	double MoveNucStatCodonProfile(double tuning, int n, int nrep=1);
-	double MoveOmega(double tuning); 
-	
+	double MoveCodonProfile(double tuning, int n, int nrep = 1);
+	double MoveNucStatCodonProfile(double tuning, int n, int nrep = 1);
+	double MoveOmega(double tuning);
+
+	std::vector<std::pair<int, int>> generatePairs(int N)
+	{
+		std::vector<std::pair<int, int>> pairs;
+
+		for (int i = 0; i < N; i++)
+		{
+			for (int j = 0; j < N; j++)
+			{
+				pairs.emplace_back(i, j);
+			}
+		}
+
+		return pairs;
+	}
+
 	int Nnucrr;
-	double* nucrr;
-	double* nucstat;
-	double* codonprofile;
-	double* omega;
+	double *nucrr;
+	double *nucstat;
+	double *codonprofile;
+	double *omega;
 	int omegaprior;
-	CodonStateSpace* statespace;
+	CodonStateSpace *statespace;
 };
 
 #endif

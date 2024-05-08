@@ -4019,8 +4019,15 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 	osmap << "\t"
 		  << "type";
 	// osmap<< "\t" <<"branchID";
-	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2);
-	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0);
+	for (int i = 0; i < GetStateSpace()->GetNstate(); i++)
+	{
+		for (int j = 0; j < GetStateSpace()->GetNstate(); j++)
+		{
+			osmap << "\t" << GetStateSpace()->GetState(i) << GetStateSpace()->GetState(j);
+		}
+	}
+	// osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2);
+	// osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0);
 	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << ">" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(2);
 	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << ">" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(0);
 	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0) << ">" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(0);
@@ -4233,37 +4240,37 @@ void PhyloProcess::SlaveWriteSuffStat()
 	osmap.close();
 }
 
-void PhyloProcess::GetSuffDiStat(string name, int iter, int type)
-{
-	std::map<std::tuple<std::pair<int, int>, std::pair<int, int>>, int> branchpaircount;
-	std::map<std::pair<int, int>, double> branchwaitingtime;
-	for (int i = 0; i < GetNsite(); i++)
-	{
-		WriteSuffDiStat(GetRoot(), i, iter, type, branchpaircount, branchwaitingtime);
-	}
-	stringstream osfmap;
-	osfmap << name << ".TsCpGRate";
-	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
+// void PhyloProcess::GetSuffDiStat(string name, int iter, int type)
+// {
+// 	std::map<std::tuple<std::pair<int, int>, std::pair<int, int>>, int> branchpaircount;
+// 	std::map<std::pair<int, int>, double> branchwaitingtime;
+// 	for (int i = 0; i < GetNsite(); i++)
+// 	{
+// 		WriteSuffDiStat(GetRoot(), i, iter, type, branchpaircount, branchwaitingtime);
+// 	}
+// 	stringstream osfmap;
+// 	osfmap << name << ".TsCpGRate";
+// 	ofstream osmap((osfmap.str()).c_str(), ios_base::app);
 
-	if (type == 0)
-	{
-		osmap << iter << "\t"
-			  << "post";
-	}
-	else
-	{
-		osmap << iter << "\t"
-			  << "pred";
-	}
-	osmap << "\t" << branchwaitingtime[pair<int, int>(1, 2)];
-	osmap << "\t" << branchwaitingtime[pair<int, int>(3, 0)];
-	osmap << "\t" << branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(1, 2), std::pair<int, int>(3, 2))];
-	osmap << "\t" << branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(1, 2), std::pair<int, int>(1, 0))];
-	osmap << "\t" << branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(3, 0), std::pair<int, int>(2, 0))];
-	osmap << "\t" << branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(3, 0), std::pair<int, int>(3, 2))];
-	osmap << "\n";
-	osmap.close();
-}
+// 	if (type == 0)
+// 	{
+// 		osmap << iter << "\t"
+// 			  << "post";
+// 	}
+// 	else
+// 	{
+// 		osmap << iter << "\t"
+// 			  << "pred";
+// 	}
+// 	osmap << "\t" << branchwaitingtime[pair<int, int>(1, 2)];
+// 	osmap << "\t" << branchwaitingtime[pair<int, int>(3, 0)];
+// 	osmap << "\t" << branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(1, 2), std::pair<int, int>(3, 2))];
+// 	osmap << "\t" << branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(1, 2), std::pair<int, int>(1, 0))];
+// 	osmap << "\t" << branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(3, 0), std::pair<int, int>(2, 0))];
+// 	osmap << "\t" << branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(3, 0), std::pair<int, int>(3, 2))];
+// 	osmap << "\n";
+// 	osmap.close();
+// }
 
 void PhyloProcess::SlaveWriteSuffDiStat()
 {
@@ -4303,6 +4310,12 @@ void PhyloProcess::SlaveWriteSuffDiStat()
 	{
 		osmap << iter << "\t"
 			  << "pred";
+	}
+	
+	for (int i = 0 ; i < GetStateSpace()->GetNstate() ; i++)	{
+		for (int j = 0 ; j < GetStateSpace()->GetNstate() ; j++)	{
+			osmap << "\t" << branchwaitingtime[pair<int, int>(i, j)];
+		}
 	}
 	osmap << "\t" << branchwaitingtime[pair<int, int>(1, 2)];
 	osmap << "\t" << branchwaitingtime[pair<int, int>(3, 0)];

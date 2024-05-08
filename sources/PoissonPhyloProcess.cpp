@@ -368,6 +368,12 @@ void PoissonPhyloProcess::SlaveWriteSuffStat(){
 	PhyloProcess::SlaveWriteSuffStat();
 }
 
+void PoissonPhyloProcess::SlaveWriteSuffDiStat(){
+	SampleTrueNodeStates(GetRoot());
+	RecursiveUnzipBranchSitePath(GetRoot());
+	PhyloProcess::SlaveWriteSuffDiStat();
+}
+
 void PoissonPhyloProcess::SampleTrueNodeStates(const Link* from)	{
 	
 	if (from->isRoot())	{
