@@ -735,31 +735,102 @@ void AACodonMutSelSBDPPhyloProcess::SlaveWriteSuffDiStat()
 			  << "pred";
 	}
 
-	int NSubSynTsCpG23 = 0;
-	double T_CG23 = 0;
+	int CG2CA12 = 0;
+	int CG2TG12 = 0;
+	double T_CG12 = 0;
+	int CG2CA12syn = 0;
+	int CG2CA12nonsyn = 0;
+	int CG2TG12syn = 0;
+	int CG2TG12nonsyn = 0;
+	
+	int k = GetStateSpace()->GetState("CGA");
+	T_CG12 += branchwaitingtime[k];
+	int l = GetStateSpace()->GetState("CAA");
+	int m = GetStateSpace()->GetState("TGA");
+	CG2CA12 += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG12 += branchpaircount[std::pair<int, int>(k, m)];
+	CG2CA12nonsyn += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG12nonsyn += branchpaircount[std::pair<int, int>(k, m)];
+	
+	k = GetStateSpace()->GetState("CGC");
+	T_CG12 += branchwaitingtime[k];
+	l = GetStateSpace()->GetState("CAC");
+	m = GetStateSpace()->GetState("TGC");
+	CG2CA12 += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG12 += branchpaircount[std::pair<int, int>(k, m)];
+	CG2CA12nonsyn += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG12nonsyn += branchpaircount[std::pair<int, int>(k, m)];
+	
+	k = GetStateSpace()->GetState("CGG");
+	T_CG12 += branchwaitingtime[k];
+	l = GetStateSpace()->GetState("CAG");
+	m = GetStateSpace()->GetState("TGG");
+	CG2CA12 += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG12 += branchpaircount[std::pair<int, int>(k, m)];
+	CG2CA12nonsyn += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG12nonsyn += branchpaircount[std::pair<int, int>(k, m)];
+	
+	k = GetStateSpace()->GetState("CGT");
+	T_CG12 += branchwaitingtime[k];
+	l = GetStateSpace()->GetState("CAT");
+	m = GetStateSpace()->GetState("TGT");
+	CG2CA12 += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG12 += branchpaircount[std::pair<int, int>(k, m)];
+	CG2CA12nonsyn += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG12nonsyn += branchpaircount[std::pair<int, int>(k, m)];
 
-	int k = GetStateSpace()->GetState("TCG");
-	int l = GetStateSpace()->GetState("TCA");
-	NSubSynTsCpG23 += branchpaircount[std::pair<int, int>(k, l)];
+	double T_CG23 = 0;
+	int CG2CA23 = 0;
+	int CG2TG23 = 0;
+	int CG2CA23syn = 0;
+	int CG2CA23nonsyn = 0;
+	int CG2TG23syn = 0;
+	int CG2TG23nonsyn = 0;
+
+	k = GetStateSpace()->GetState("TCG");
 	T_CG23 += branchwaitingtime[k];
+	l = GetStateSpace()->GetState("TCA");
+	m = GetStateSpace()->GetState("TTG");
+	CG2CA23 += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG23 += branchpaircount[std::pair<int, int>(k, m)];
+	CG2CA23syn += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG23nonsyn += branchpaircount[std::pair<int, int>(k, m)];
 
 	k = GetStateSpace()->GetState("CCG");
-	l = GetStateSpace()->GetState("CCA");
-	NSubSynTsCpG23 += branchpaircount[std::pair<int, int>(k, l)];
 	T_CG23 += branchwaitingtime[k];
+	l = GetStateSpace()->GetState("CCA");
+	m = GetStateSpace()->GetState("CTG");
+	CG2CA23 += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG23 += branchpaircount[std::pair<int, int>(k, m)];
+	CG2CA23syn += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG23nonsyn += branchpaircount[std::pair<int, int>(k, m)];
 
 	k = GetStateSpace()->GetState("ACG");
+	T_CG23 += branchwaitingtime[k];
 	l = GetStateSpace()->GetState("ACA");
-	NSubSynTsCpG23 += branchpaircount[std::pair<int, int>(k, l)];
-	T_CG23 += branchwaitingtime[k];
-
+	m = GetStateSpace()->GetState("ATG");
+	CG2CA23 += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG23 += branchpaircount[std::pair<int, int>(k, m)];
+	CG2CA23syn += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG23nonsyn += branchpaircount[std::pair<int, int>(k, m)];
+	
 	k = GetStateSpace()->GetState("GCG");
-	l = GetStateSpace()->GetState("GCA");
-	NSubSynTsCpG23 += branchpaircount[std::pair<int, int>(k, l)];
 	T_CG23 += branchwaitingtime[k];
+	l = GetStateSpace()->GetState("GCA");
+	m = GetStateSpace()->GetState("GTG");
+	CG2CA23 += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG23 += branchpaircount[std::pair<int, int>(k, m)];
+	CG2CA23syn += branchpaircount[std::pair<int, int>(k, l)];
+	CG2TG23nonsyn += branchpaircount[std::pair<int, int>(k, m)];
 
-	int NSubSynTsCpG31 = 0;
+	int CG2CA31 = 0;
+	int CG2TG31 = 0;
 	double T_CG31 = 0;
+	int CG2CA31syn = 0;
+	int CG2CA31nonsyn = 0;
+	int CG2TG31syn = 0;
+	int CG2TG31nonsyn = 0;
+
 
 	std::vector<std::pair<int, int>> codon_pairs = AACodonMutSelProfileProcess::generatePairs(AACodonMutSelProfileProcess::statespace->GetNstate());
 
@@ -783,11 +854,16 @@ void AACodonMutSelSBDPPhyloProcess::SlaveWriteSuffDiStat()
 
 						if (AACodonMutSelProfileProcess::statespace->GetCodonPosition(2, codon_a_to) == 3)
 						{
+														
+							CG2TG31 += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
+							T_CG31 += siteinter_branchwaitingtime[pair<int, int>(codon_a_from, codon_b_from)];
 							if (AACodonMutSelProfileProcess::statespace->Synonymous(codon_a_from, codon_a_to))
 							{
-								// NNC|GNN > NNT|GNN
-								NSubSynTsCpG31 += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
-								T_CG31 += siteinter_branchwaitingtime[pair<int, int>(codon_a_from, codon_b_from)];
+								// NNC|GNN > NNT|GNN syn
+								CG2TG31syn += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
+							} else {
+								// NNC|GNN > NNT|GNN nonsyn
+								CG2TG31nonsyn += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
 							}
 						}
 					}
@@ -797,13 +873,17 @@ void AACodonMutSelSBDPPhyloProcess::SlaveWriteSuffDiStat()
 					int pos = AACodonMutSelProfileProcess::statespace->GetDifferingPosition(codon_b_from, codon_b_to);
 					if ((pos != -1) && (pos != 3))
 					{
-						if (AACodonMutSelProfileProcess::statespace->GetCodonPosition(2, codon_b_to) == 0)
+						if (AACodonMutSelProfileProcess::statespace->GetCodonPosition(0, codon_b_to) == 0)
 						{
+							CG2CA31 += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
+							T_CG31 += siteinter_branchwaitingtime[pair<int, int>(codon_a_from, codon_b_from)];
 							if (AACodonMutSelProfileProcess::statespace->Synonymous(codon_b_from, codon_b_to))
 							{
-								// NNC|GNN > NNC|ANN
-								NSubSynTsCpG31 += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
-								T_CG31 += siteinter_branchwaitingtime[pair<int, int>(codon_a_from, codon_b_from)];
+								// NNC|GNN > NNC|ANN syn
+								CG2CA31syn += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
+							} else {
+								// NNC|GNN > NNC|ANN nonsyn
+								CG2CA31nonsyn += siteinter_branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(codon_a_from, codon_b_from), std::pair<int, int>(codon_a_to, codon_b_to))];
 							}
 						}
 					}
@@ -811,12 +891,36 @@ void AACodonMutSelSBDPPhyloProcess::SlaveWriteSuffDiStat()
 			}
 		}
 	}
+	osmap << "\t" << (T_CG12+T_CG23+T_CG31);
+	osmap << "\t" << (CG2CA12+CG2CA23+CG2CA31);
+	osmap << "\t" << (CG2TG12+CG2TG23+CG2TG31);
+	osmap << "\t" << T_CG12;
+	osmap << "\t" << CG2CA12;
+	osmap << "\t" << CG2TG12;
 	osmap << "\t" << T_CG23;
-	osmap << "\t"
-		  << NSubSynTsCpG23;
+	osmap << "\t" << CG2CA23;
+	osmap << "\t" << CG2TG23;
 	osmap << "\t" << T_CG31;
-	osmap << "\t"
-		  << NSubSynTsCpG31;
+	osmap << "\t" << CG2CA31;
+	osmap << "\t" << CG2TG31;
+	
+	osmap << "\t" << CG2CA12syn + CG2CA23syn + CG2CA31syn;
+	osmap << "\t" << CG2CA12nonsyn + CG2CA23nonsyn + CG2CA31nonsyn;
+	osmap << "\t" << CG2TG12syn + CG2TG23syn + CG2TG31syn;
+	osmap << "\t" << CG2TG12nonsyn + CG2TG23nonsyn + CG2TG31nonsyn;
+	osmap << "\t" << CG2CA12syn;
+	osmap << "\t" << CG2CA12nonsyn;
+	osmap << "\t" << CG2TG12syn;
+	osmap << "\t" << CG2TG12nonsyn;
+	osmap << "\t" << CG2CA23syn;
+	osmap << "\t" << CG2CA23nonsyn;
+	osmap << "\t" << CG2TG23syn;
+	osmap << "\t" << CG2TG23nonsyn;
+	osmap << "\t" << CG2CA31syn;
+	osmap << "\t" << CG2CA31nonsyn;
+	osmap << "\t" << CG2TG31syn;
+	osmap << "\t" << CG2TG31nonsyn;
+
 	osmap << "\n";
 	osmap.close();
 }
@@ -851,14 +955,62 @@ void AACodonMutSelSBDPPhyloProcess::ReadMapDiStats(string name, int burnin, int 
 		   << "\t"
 		   << "type";
 	osmap_ << "\t"
-		   << "T_CpG23"
+		   << "CG"
 		   << "\t"
-		   << "NSubSynTsCpG23";
+		   << "CG>CA"
+		   << "\t"
+		   << "CG>TG";
 	osmap_ << "\t"
-		   << "T_CpG31"
+		   << "CG12"
 		   << "\t"
-		   << "NSubSynTsCpG31";
-	osmap_ << "\n";
+		   << "CG>CA12"
+		   << "\t"
+		   << "CG>TG12";
+	osmap_ << "\t"
+		   << "CG23"
+		   << "\t"
+		   << "CG>CA23"
+		   << "\t"
+		   << "CG>TG23";
+	osmap_ << "\t"
+		   << "CG31"
+		   << "\t"
+		   << "CG>CA31"
+		   << "\t"
+		   << "CG>TG31";
+	osmap_ << "\t"
+		   << "CG>CAsyn"
+		   << "\t"
+		   << "CG>CAnonsyn"
+		   << "\t"
+		   << "CG>TGsyn"
+		   << "\t"
+		   << "CG>TGnonsyn";
+	osmap_ << "\t"
+		   << "CG>CAsyn12"
+		   << "\t"
+		   << "CG>CAnonsyn12"
+		   << "\t"
+		   << "CG>TGsyn12"
+		   << "\t"
+		   << "CG>TGnonsyn12";
+	osmap_ << "\t"
+		   << "CG>CAsyn23"
+		   << "\t"
+		   << "CG>CAnonsyn23"
+		   << "\t"
+		   << "CG>TGsyn23"
+		   << "\t"
+		   << "CG>TGnonsyn23";
+	osmap_ << "\t"
+		   << "CG>CAsyn31"
+		   << "\t"
+		   << "CG>CAnonsyn31"
+		   << "\t"
+		   << "CG>TGsyn31"
+		   << "\t"
+		   << "CG>TGnonsyn31";
+	osmap_ << "\n";	
 	osmap_.close();
 
 	while (GetIter() < until)

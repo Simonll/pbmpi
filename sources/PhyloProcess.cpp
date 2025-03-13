@@ -4019,19 +4019,41 @@ void PhyloProcess::ReadMapDiStats(string name, int burnin, int every, int until)
 	osmap << "\t"
 		  << "type";
 	// osmap<< "\t" <<"branchID";
-	for (int i = 0; i < GetStateSpace()->GetNstate(); i++)
-	{
-		for (int j = 0; j < GetStateSpace()->GetNstate(); j++)
-		{
-			osmap << "\t" << GetStateSpace()->GetState(i) << GetStateSpace()->GetState(j);
-		}
-	}
-	// osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2);
-	// osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0);
+	
+	// Globaly
+	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2);
+	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0);
 	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << ">" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(2);
 	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << ">" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(0);
 	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0) << ">" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(0);
 	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0) << ">" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(2);
+	
+	//12
+	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << "12";
+	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0) << "12";
+	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << "12" << ">" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(2) << "12";
+	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << "12" << ">" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(0) << "12";
+	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0) << "12" << ">" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(0) << "12";
+	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0) << "12" << ">" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(2) << "12";
+
+
+	//23
+	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << "23";
+	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0) << "23";
+	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << "23" << ">" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(2) << "23";
+	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << "23" << ">" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(0) << "23";
+	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0) << "23" << ">" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(0) << "23";
+	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0) << "23" << ">" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(2) << "23";
+
+	//31
+	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << "31";
+	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0) << "31";
+	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << "31" << ">" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(2) << "31";
+	osmap << "\t" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(2) << "31" << ">" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(0) << "31";
+	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0) << "31" << ">" << GetStateSpace()->GetState(1) << GetStateSpace()->GetState(0) << "31";
+	osmap << "\t" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(0) << "31" << ">" << GetStateSpace()->GetState(3) << GetStateSpace()->GetState(2) << "31";
+	
+	
 	osmap << "\n";
 	osmap.close();
 
@@ -4292,9 +4314,30 @@ void PhyloProcess::SlaveWriteSuffDiStat()
 	string name = os.str();
 	delete[] bvector;
 	std::map<std::tuple<std::pair<int, int>, std::pair<int, int>>, int> branchpaircount;
+	std::map<std::tuple<std::pair<int, int>, std::pair<int, int>>, int> branchpaircount_12;
+	std::map<std::tuple<std::pair<int, int>, std::pair<int, int>>, int> branchpaircount_23;
+	std::map<std::tuple<std::pair<int, int>, std::pair<int, int>>, int> branchpaircount_31;
 	std::map<std::pair<int, int>, double> branchwaitingtime;
+	std::map<std::pair<int, int>, double> branchwaitingtime_12;
+	std::map<std::pair<int, int>, double> branchwaitingtime_23;
+	std::map<std::pair<int, int>, double> branchwaitingtime_31;
+
 	for (int i = sitemin; i < sitemax; i++)
 	{
+		
+		if (i % 3 == 0)
+		{
+			WriteSuffDiStat(GetRoot(), i, iter, type, branchpaircount_12, branchwaitingtime_12);
+		}
+		else if (i % 3 == 1)
+		{
+			WriteSuffDiStat(GetRoot(), i, iter, type, branchpaircount_23, branchwaitingtime_23);
+		}
+		else
+		{
+			WriteSuffDiStat(GetRoot(), i, iter, type, branchpaircount_31, branchwaitingtime_31);
+		}
+		
 		WriteSuffDiStat(GetRoot(), i, iter, type, branchpaircount, branchwaitingtime);
 	}
 	stringstream osfmap;
@@ -4312,17 +4355,38 @@ void PhyloProcess::SlaveWriteSuffDiStat()
 			  << "pred";
 	}
 	
-	for (int i = 0 ; i < GetStateSpace()->GetNstate() ; i++)	{
-		for (int j = 0 ; j < GetStateSpace()->GetNstate() ; j++)	{
-			osmap << "\t" << branchwaitingtime[pair<int, int>(i, j)];
-		}
-	}
+	// global
 	osmap << "\t" << branchwaitingtime[pair<int, int>(1, 2)];
 	osmap << "\t" << branchwaitingtime[pair<int, int>(3, 0)];
 	osmap << "\t" << branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(1, 2), std::pair<int, int>(3, 2))];
 	osmap << "\t" << branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(1, 2), std::pair<int, int>(1, 0))];
 	osmap << "\t" << branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(3, 0), std::pair<int, int>(2, 0))];
 	osmap << "\t" << branchpaircount[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(3, 0), std::pair<int, int>(3, 2))];
+	
+	//12
+	osmap << "\t" << branchwaitingtime_12[pair<int, int>(1, 2)];
+	osmap << "\t" << branchwaitingtime_12[pair<int, int>(3, 0)];
+	osmap << "\t" << branchpaircount_12[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(1, 2), std::pair<int, int>(3, 2))];
+	osmap << "\t" << branchpaircount_12[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(1, 2), std::pair<int, int>(1, 0))];
+	osmap << "\t" << branchpaircount_12[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(3, 0), std::pair<int, int>(2, 0))];
+	osmap << "\t" << branchpaircount_12[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(3, 0), std::pair<int, int>(3, 2))];
+	
+	//23
+	osmap << "\t" << branchwaitingtime_23[pair<int, int>(1, 2)];
+	osmap << "\t" << branchwaitingtime_23[pair<int, int>(3, 0)];
+	osmap << "\t" << branchpaircount_23[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(1, 2), std::pair<int, int>(3, 2))];
+	osmap << "\t" << branchpaircount_23[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(1, 2), std::pair<int, int>(1, 0))];
+	osmap << "\t" << branchpaircount_23[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(3, 0), std::pair<int, int>(2, 0))];
+	osmap << "\t" << branchpaircount_23[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(3, 0), std::pair<int, int>(3, 2))];
+
+	//31
+	osmap << "\t" << branchwaitingtime_31[pair<int, int>(1, 2)];
+	osmap << "\t" << branchwaitingtime_31[pair<int, int>(3, 0)];
+	osmap << "\t" << branchpaircount_31[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(1, 2), std::pair<int, int>(3, 2))];
+	osmap << "\t" << branchpaircount_31[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(1, 2), std::pair<int, int>(1, 0))];
+	osmap << "\t" << branchpaircount_31[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(3, 0), std::pair<int, int>(2, 0))];
+	osmap << "\t" << branchpaircount_31[std::tuple<std::pair<int, int>, std::pair<int, int>>(std::pair<int, int>(3, 0), std::pair<int, int>(3, 2))];
+
 	osmap << "\n";
 	osmap.close();
 }
