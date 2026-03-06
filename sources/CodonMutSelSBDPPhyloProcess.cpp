@@ -32,7 +32,7 @@ void CodonMutSelSBDPPhyloProcess::SlaveUpdateParameters()	{
 	L1 = GetNmodeMax();
 	L2 = GetDim();
 	//nd = nbranch + nnucrr + nnucstat + L2 + L1*(L2+1); // check if these last terms are correct in this context...
-	nd = 2 + nbranch + nnucrr + nnucstat + L1*L2 + GetDim() + 1;
+	nd = 2 + nbranch + nnucrr + nnucstat + L1*L2 + GetDim() + 1 +1;
 	ni = 1 + ProfileProcess::GetNsite();
 	int* ivector = new int[ni];
 	double* dvector = new double[nd];
@@ -66,6 +66,8 @@ void CodonMutSelSBDPPhyloProcess::SlaveUpdateParameters()	{
 		index++;
 	}
 	kappa = dvector[index];
+	index++;
+	*omega = dvector[index];
 	index++;
 	
 	Ncomponent = ivector[0];
@@ -132,7 +134,7 @@ void CodonMutSelSBDPPhyloProcess::GlobalUpdateParameters() {
 	L1 = GetNmodeMax();
 	L2 = GetDim();
 	//nd = nbranch + nnucrr + nnucstat + L2 + L1*(L2+1);  // check if these last terms are correct in this context...
-	nd = 2 + nbranch + nnucrr + + nnucstat + L1*L2 + GetDim() + 1;
+	nd = 2 + nbranch + nnucrr + + nnucstat + L1*L2 + GetDim() + 1 + 1;
 	ni = 1 + ProfileProcess::GetNsite(); // 1 for the number of componenets, and the rest for allocations
 	int ivector[ni];
 	double dvector[nd]; 
@@ -172,6 +174,8 @@ void CodonMutSelSBDPPhyloProcess::GlobalUpdateParameters() {
 		index++;
 	}
 	dvector[index] = kappa;
+	index++;
+	dvector[index] = *omega;
 	index++;
 
 	// Now the vector of ints

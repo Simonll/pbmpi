@@ -39,12 +39,12 @@ class CodonMutSelFiniteSubstitutionProcess : public virtual CodonMutSelFinitePro
 		exit(1);
 	}
 
-	void Create(int innsite, int indim, int ncat, int infixncomp, int inempmix, string inmixtype, int sitemin, int sitemax, CodonStateSpace* instatespace)	{
+	void Create(int innsite, int indim, int ncat, int infixncomp, int inempmix, string inmixtype, int sitemin, int sitemax, CodonStateSpace* instatespace, int infixomega)	{
 		if (ncat == -1)	{
 			ncat = innsite;
 		}
 	
-		CodonMutSelFiniteProfileProcess::Create(innsite,indim,ncat,infixncomp,inempmix,inmixtype,instatespace);
+		CodonMutSelFiniteProfileProcess::Create(innsite,indim,ncat,infixncomp,inempmix,inmixtype,instatespace,infixomega);
 		UniformRateProcess::Create(innsite);
 		GeneralPathSuffStatMatrixSubstitutionProcess::Create(innsite,indim,sitemin,sitemax);
 	}

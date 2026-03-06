@@ -39,8 +39,8 @@ class CodonMutSelSBDPSubstitutionProcess : public virtual CodonMutSelSBDPProfile
 		exit(1);
 	}
 
-	void Create(int innsite, int indim, int sitemin, int sitemax, CodonStateSpace* instatespace)	{
-		CodonMutSelSBDPProfileProcess::Create(innsite,indim,instatespace);
+	void Create(int innsite, int indim, int sitemin, int sitemax, CodonStateSpace* instatespace, int infixomega)	{
+		CodonMutSelSBDPProfileProcess::Create(innsite,indim,instatespace,infixomega);
 		UniformRateProcess::Create(innsite);
 		GeneralPathSuffStatMatrixSubstitutionProcess::Create(innsite,indim,sitemin,sitemax);
 	}

@@ -40,10 +40,11 @@ class CodonMutSelSBDPProfileProcess : public virtual MatrixSBDPProfileProcess, p
 		exit(1);
 	}
 
-	void Create(int innsite, int indim, CodonStateSpace* instatespace)	{
+	void Create(int innsite, int indim, CodonStateSpace* instatespace, int infixomega)	{
 		MatrixSBDPProfileProcess::Create(innsite,indim);
 		GeneralPathSuffStatMatrixMixtureProfileProcess::Create(innsite,indim);
 		CodonMutSelProfileProcess::Create(innsite,indim,instatespace);
+		fixomega = infixomega;
 	}
 	
 	void Delete()	{
@@ -86,6 +87,11 @@ class CodonMutSelSBDPProfileProcess : public virtual MatrixSBDPProfileProcess, p
 			MoveNucStat(tuning*0.02,n);
 			MoveNucStat(tuning*0.01,n);
 
+			if (! fixomega)	{
+				MoveOmega(tuning);
+				MoveOmega(tuning*0.3);
+			}
+
 			// allocations
 			//GlobalUpdateParameters();
 			//GlobalUpdateSiteProfileSuffStat();//*/
@@ -97,6 +103,7 @@ class CodonMutSelSBDPProfileProcess : public virtual MatrixSBDPProfileProcess, p
 			GlobalUpdateParameters();
 			GlobalUpdateSiteProfileSuffStat();
 			UpdateModeProfileSuffStat();
+			
 			GlobalMixMove(5,1,0.001,40);
 			MoveOccupiedCompAlloc(5);
 			MoveAdjacentCompAlloc(5);
@@ -112,14 +119,24 @@ class CodonMutSelSBDPProfileProcess : public virtual MatrixSBDPProfileProcess, p
 			*/
 
 			// hyperparameters
-			//GlobalUpdateParameters();
-			//GlobalUpdateSiteProfileSuffStat();
-			MoveHyper(tuning,10);		
-			MoveHyper(tuning*0.5,10);		
-			MoveHyper(tuning*0.4,10);		
-			MoveHyper(tuning*0.3,10);		
-			MoveHyper(tuning*0.2,10);		
-			MoveHyper(tuning*0.1,10);		
+			GlobalUpdateParameters();
+			GlobalUpdateSiteProfileSuffStat();
+			if (dirweightprior == 0)	{
+				MoveHyper(tuning,10);		
+				MoveHyper(tuning*0.5,10);		
+				MoveHyper(tuning*0.4,10);		
+				MoveHyper(tuning*0.3,10);		
+				MoveHyper(tuning*0.2,10);		
+				MoveHyper(tuning*0.1,10);
+			}
+			else	{
+				MoveKappa(tuning,10);
+				MoveKappa(tuning*0.5,10);		
+				MoveKappa(tuning*0.4,10);		
+				MoveKappa(tuning*0.3,10);		
+				MoveKappa(tuning*0.2,10);		
+				MoveKappa(tuning*0.1,10);
+			}		
 		}
 		return 1;
 	}
@@ -134,7 +151,8 @@ class CodonMutSelSBDPProfileProcess : public virtual MatrixSBDPProfileProcess, p
 			os << GetNucRR(i) << '\t';
 		}
 		os << '\n';
-		os << '\n';		
+		os << '\n';
+		os << *omega << '\n';		
 
 		os << kappa << '\n';
 		os << Ncomponent << '\n';
@@ -162,7 +180,7 @@ class CodonMutSelSBDPProfileProcess : public virtual MatrixSBDPProfileProcess, p
 		for (int i=0; i<GetNnucrr(); i++)	{
 			is >> nucrr[i];
 		}
-
+		is >> *omega;
 		is >> kappa;
 		is >> Ncomponent;
 		for (int j=0; j<GetDim(); j++)	{
@@ -185,7 +203,7 @@ class CodonMutSelSBDPProfileProcess : public virtual MatrixSBDPProfileProcess, p
 			exit(1);
 		}
 		//matrixarray[k] = new AAMutSelProfileSubMatrix(statespace,nucrr,nucstat,profile[k],false);
-		matrixarray[k] = new CodonMutSelProfileSubMatrix(statespace,nucrr,nucstat,profile[k],true);
+		matrixarray[k] = new CodonMutSelProfileSubMatrix(statespace,nucrr,nucstat,profile[k],omega,true);
 	}
 	
 	virtual void SwapComponents(int cat1, int cat2)	{
@@ -195,6 +213,9 @@ class CodonMutSelSBDPProfileProcess : public virtual MatrixSBDPProfileProcess, p
 	void UpdateMatrix(int k)	{
 		matrixarray[k]->CorruptMatrix();
 	}
+	GeneticCodeType codetype;
+	int fixomega;
+
 };
 
 #endif

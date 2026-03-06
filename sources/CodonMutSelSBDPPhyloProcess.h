@@ -29,13 +29,15 @@ class CodonMutSelSBDPPhyloProcess : public virtual CodonMutSelSBDPSubstitutionPr
 
 	public:
 
-	CodonMutSelSBDPPhyloProcess(string indatafile, string treefile, GeneticCodeType incodetype, int infixtopo, int infixbl, int inNSPR, int inNNNI, int inkappaprior, double inmintotweight, int indc, int me, int np)	{
+	CodonMutSelSBDPPhyloProcess(string indatafile, string treefile, GeneticCodeType incodetype, int infixtopo, int infixbl, int inNSPR, int inNNNI, int infixomega, int inomegaprior, int inkappaprior, double inmintotweight, int indc, int me, int np)	{
 		myid = me;
 		nprocs = np;
 		fixtopo = infixtopo;
 		fixbl = infixbl;
 		NSPR = inNSPR;
 		NNNI = inNNNI;
+		fixomega = infixomega;
+		omegaprior = inomegaprior;
 		dc = indc;
 		kappaprior = inkappaprior;
 		SetMinTotWeight(inmintotweight);
@@ -77,7 +79,7 @@ class CodonMutSelSBDPPhyloProcess : public virtual CodonMutSelSBDPSubstitutionPr
 			}
 		}
 
-		Create(tree,codondata,insitemin,insitemax,statespace);
+		Create(tree,codondata,insitemin,insitemax,statespace,fixomega);
 		if (myid == 0)	{
 			Sample();
 			GlobalUnfold();
@@ -106,6 +108,13 @@ class CodonMutSelSBDPPhyloProcess : public virtual CodonMutSelSBDPSubstitutionPr
 		else	{
 			NSPR = 10;
 			NNNI = 0;
+		}
+		is >> fixomega;
+		if (atof(version.substr(0,3).c_str()) > 1.5)	{
+			is >> omegaprior;
+		}
+		else	{
+			omegaprior = 0;
 		}
 		is >> kappaprior;
 		is >> mintotweight;
@@ -137,7 +146,7 @@ class CodonMutSelSBDPPhyloProcess : public virtual CodonMutSelSBDPSubstitutionPr
 		}
 		tree->RegisterWith(taxonset,0);
 
-		Create(tree,codondata,insitemin,insitemax,statespace);
+		Create(tree,codondata,insitemin,insitemax,statespace,fixomega);
 
 		if (myid == 0)	{
 			FromStream(is);
@@ -174,7 +183,7 @@ class CodonMutSelSBDPPhyloProcess : public virtual CodonMutSelSBDPSubstitutionPr
 	}
 
 	void TraceHeader(ostream& os)	{
-		os << "time\ttimeperccyle\tpruning\tlnL\tlength\talpha\tNmode\tstatent\tstatalpha\tnucsA\tnucsC\tnucsG\tnucsT\tnucrrAC\tnucrrAG\tnucrrAT\tnucrrCG\tnucrrCT\tnucrrGT";
+		os << "time\ttimeperccyle\tpruning\tlnL\tlength\tomega\talpha\tNmode\tstatent\tstatalpha\tnucsA\tnucsC\tnucsG\tnucsT\tnucrrAC\tnucrrAG\tnucrrAT\tnucrrCG\tnucrrCT\tnucrrGT";
 		os << '\n'; 
 
 		//os << "lnL\tlength\tNmode\tNocc\tnucsA\tnucsC\tnucsT\tnucsG\tnucrrAC\tnucrrAG\tnucrrAT\tnucrrCG\tnucrrCT\tnucrrGT\tstatent";
@@ -205,13 +214,13 @@ class CodonMutSelSBDPPhyloProcess : public virtual CodonMutSelSBDPSubstitutionPr
 		os << '\t' <<  GetLogLikelihood();
 		os << '\t' << GetTotalLength();
 		os << '\t' << GetAlpha();
+		os << '\t' << GetOmega();
 		os << '\t' << GetNDisplayedComponent();
 		//os << '\t' << GetNOccupiedComponent();
 		os << '\t' << GetStatEnt();
 		os << '\t' << GetMeanDirWeight();
 		os << '\t' << GetNucStat(0) << '\t' << GetNucStat(1) << '\t' << GetNucStat(2) << '\t' << GetNucStat(3);
 		os << '\t' << GetNucRR(0) << '\t' << GetNucRR(1) << '\t' << GetNucRR(2) << '\t' << GetNucRR(3) << '\t' << GetNucRR(4) << '\t' << GetNucRR(5);
-
 		os << '\n';
 		//if (chronototal.GetTime())	{
 		//	os << '\t' << ((int) (100 * chronopruning.GetTime() /chronototal.GetTime()));
@@ -240,6 +249,10 @@ class CodonMutSelSBDPPhyloProcess : public virtual CodonMutSelSBDPSubstitutionPr
 		os << fixbl << '\n';
 		if (atof(version.substr(0,3).c_str()) > 1.4)	{
             os << NSPR << '\t' << NNNI << '\n';
+        }
+		os << fixomega << '\n';
+		if (atof(version.substr(0,3).c_str()) > 1.5)	{
+            os << omegaprior << '\n';
         }
 		os << kappaprior << '\n';
 		os << mintotweight << '\n';
@@ -308,10 +321,10 @@ class CodonMutSelSBDPPhyloProcess : public virtual CodonMutSelSBDPSubstitutionPr
 		exit(1);
 	}
 
-	virtual void Create(Tree* intree, SequenceAlignment* indata, int sitemin, int sitemax, CodonStateSpace* instatespace)	{
+	virtual void Create(Tree* intree, SequenceAlignment* indata, int sitemin, int sitemax, CodonStateSpace* instatespace, int infixomega)	{
 		//cerr << "just before creating substitution process\n";
 		//cerr.flush();
-		CodonMutSelSBDPSubstitutionProcess::Create(indata->GetNsite(),indata->GetNstate(),sitemin,sitemax,instatespace);
+		CodonMutSelSBDPSubstitutionProcess::Create(indata->GetNsite(),indata->GetNstate(),sitemin,sitemax,instatespace,infixomega);
 		//cerr << "just before creating phyloprocess\n";
 		//cerr.flush();
 		GeneralPathSuffStatMatrixPhyloProcess::Create(intree,indata,indata->GetNstate(),sitemin,sitemax);
@@ -319,8 +332,8 @@ class CodonMutSelSBDPPhyloProcess : public virtual CodonMutSelSBDPSubstitutionPr
 		//cerr.flush();
 		GammaBranchProcess::Create(intree);
 		//cerr << "Done create\n";
-		//cerr.flush();
-	}
+			//cerr.flush();
+		}
 
 	virtual void Delete()	{
 		GeneralPathSuffStatMatrixPhyloProcess::Delete();
@@ -330,6 +343,7 @@ class CodonMutSelSBDPPhyloProcess : public virtual CodonMutSelSBDPSubstitutionPr
 
 	GeneticCodeType codetype;
 	CodonStateSpace* statespace;
+	int fixomega;
     double siteloglcutoff;
 
 	Chrono chronopruning;

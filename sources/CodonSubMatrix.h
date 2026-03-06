@@ -101,9 +101,10 @@ class CodonMutSelProfileSubMatrix : public CodonSubMatrix	{
 
 	public:
 
-	CodonMutSelProfileSubMatrix(CodonStateSpace* instatespace, double* innucrr, double* innucstat, double* incodonprofile, bool innormalise) :
+	CodonMutSelProfileSubMatrix(CodonStateSpace* instatespace, double* innucrr, double* innucstat, double* incodonprofile, double* inomega, bool innormalise) :
 		CodonSubMatrix(instatespace,innucrr,innucstat,innormalise),
-		codonprofile(incodonprofile) {}
+		codonprofile(incodonprofile),
+		omega(inomega) {}
 
 	double* GetCodonProfile() {return codonprofile;}
 
@@ -113,6 +114,7 @@ class CodonMutSelProfileSubMatrix : public CodonSubMatrix	{
 	void ComputeStationary();
 	double GetRate();
 	double* codonprofile;
+	double* omega;
 
 };
 

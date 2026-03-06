@@ -29,7 +29,7 @@ class CodonMutSelFinitePhyloProcess : public virtual CodonMutSelFiniteSubstituti
 
 	public:
 
-	CodonMutSelFinitePhyloProcess(string indatafile, string treefile, GeneticCodeType incodetype, int innmodemax, int ncat, int infixncomp, int inempmix, string inmixtype, int infixtopo, int infixbl, int inNSPR, int inNNNI, int indirweightprior, int indc, int me, int np)	{
+	CodonMutSelFinitePhyloProcess(string indatafile, string treefile, GeneticCodeType incodetype, int innmodemax, int ncat, int infixncomp, int inempmix, string inmixtype, int infixtopo, int infixbl, int inNSPR, int inNNNI, int infixomega, int inomegaprior, int indirweightprior, int indc, int me, int np)	{
 		myid = me;
 		nprocs = np;
 		dc = indc;
@@ -37,6 +37,8 @@ class CodonMutSelFinitePhyloProcess : public virtual CodonMutSelFiniteSubstituti
 		fixbl = infixbl;
 		NSPR = inNSPR;
 		NNNI = inNNNI;
+		fixomega = infixomega;
+		omegaprior = inomegaprior;
 		dirweightprior = indirweightprior;
 
 		datafile = indatafile;
@@ -78,7 +80,7 @@ class CodonMutSelFinitePhyloProcess : public virtual CodonMutSelFiniteSubstituti
 
         SetNmodeMax(innmodemax);
 
-		Create(tree,codondata,ncat,infixncomp,inempmix,inmixtype,insitemin,insitemax,statespace);
+		Create(tree,codondata,ncat,infixncomp,inempmix,inmixtype,insitemin,insitemax,statespace,fixomega);
 		if (myid == 0)	{
 			if (fixbl)	{
 				SampleRate();
@@ -127,6 +129,13 @@ class CodonMutSelFinitePhyloProcess : public virtual CodonMutSelFiniteSubstituti
 			NSPR = 10;
 			NNNI = 0;
 		}
+		is >> fixomega;
+		if (atof(version.substr(0,3).c_str()) > 1.5)	{
+			is >> omegaprior;
+		}
+		else	{
+			omegaprior = 0;
+		}
 		is >> dirweightprior;
 		is >> dc;
 		SequenceAlignment* nucdata = new FileSequenceAlignment(datafile,0,myid);
@@ -156,7 +165,7 @@ class CodonMutSelFinitePhyloProcess : public virtual CodonMutSelFiniteSubstituti
 		}
 		tree->RegisterWith(taxonset,0);
 
-		Create(tree,codondata,ncat,infixncomp,inempmix,inmixtype,insitemin,insitemax,statespace);
+		Create(tree,codondata,ncat,infixncomp,inempmix,inmixtype,insitemin,insitemax,statespace,fixomega);
 
 		if (myid == 0)	{
 			FromStream(is);
@@ -190,7 +199,7 @@ class CodonMutSelFinitePhyloProcess : public virtual CodonMutSelFiniteSubstituti
 	}
 
 	void TraceHeader(ostream& os)	{
-		os << "iter\ttime\tpruning\tlnL\tlength\tNmode\tstatent\tstatalpha\tnucsA\tnucsC\tnucsG\tnucsT\tnucrrAC\tnucrrAG\tnucrrAT\tnucrrCG\tnucrrCT\tnucrrGT";
+		os << "iter\ttime\tpruning\tlnL\tlength\tomega\tNmode\tstatent\tstatalpha\tnucsA\tnucsC\tnucsG\tnucsT\tnucrrAC\tnucrrAG\tnucrrAT\tnucrrCG\tnucrrCT\tnucrrGT";
 		os << "\n";
 		//os << "\ttotaltime";
 		//os << "\tpruning\tsuffstat\tunfold\tcollapse";
@@ -218,6 +227,7 @@ class CodonMutSelFinitePhyloProcess : public virtual CodonMutSelFiniteSubstituti
 		os << '\t' <<  GetLogLikelihood();
 		os << '\t' << GetTotalLength();
 		//os << '\t' << GetAlpha();
+		os << '\t' << GetOmega();
 		os << '\t' << GetNDisplayedComponent();
 		//os << '\t' << GetNOccupiedComponent();
 		os << '\t' << GetStatEnt();
@@ -274,6 +284,10 @@ class CodonMutSelFinitePhyloProcess : public virtual CodonMutSelFiniteSubstituti
 		os << fixbl << '\n';
 		if (atof(version.substr(0,3).c_str()) > 1.4)	{
             os << NSPR << '\t' << NNNI << '\n';
+        }
+		os << fixomega << '\n';
+		if (atof(version.substr(0,3).c_str()) > 1.5)	{
+            os << omegaprior << '\n';
         }
 		os << dirweightprior << '\n';
 		os << dc << '\n';
@@ -337,8 +351,8 @@ class CodonMutSelFinitePhyloProcess : public virtual CodonMutSelFiniteSubstituti
 		exit(1);
 	}
 
-	virtual void Create(Tree* intree, SequenceAlignment* indata, int ncat, int infixncomp, int inempmix, string inmixtype, int sitemin, int sitemax, CodonStateSpace* instatespace)	{
-		CodonMutSelFiniteSubstitutionProcess::Create(indata->GetNsite(),indata->GetNstate(),ncat,infixncomp, inempmix, inmixtype,sitemin,sitemax,instatespace);
+	virtual void Create(Tree* intree, SequenceAlignment* indata, int ncat, int infixncomp, int inempmix, string inmixtype, int sitemin, int sitemax, CodonStateSpace* instatespace,int infixomega)	{
+		CodonMutSelFiniteSubstitutionProcess::Create(indata->GetNsite(),indata->GetNstate(),ncat,infixncomp, inempmix, inmixtype,sitemin,sitemax,instatespace,infixomega);
 		GeneralPathSuffStatMatrixPhyloProcess::Create(intree,indata,indata->GetNstate(),sitemin,sitemax);
 		GammaBranchProcess::Create(intree);
 	}
@@ -349,6 +363,7 @@ class CodonMutSelFinitePhyloProcess : public virtual CodonMutSelFiniteSubstituti
 		GammaBranchProcess::Delete();
 	}
 
+	int fixomega;
 	GeneticCodeType codetype;
 	CodonStateSpace* statespace;
 

@@ -26,14 +26,16 @@ along with PhyloBayes. If not, see <http://www.gnu.org/licenses/>.
 
 void CodonMutSelProfileProcess::Create(int innsite, int indim, CodonStateSpace* instatespace)	{
 	
-	if ( (!nucrr) && (!nucstat) )	{
+	if ( (!nucrr) && (!nucstat) && (!omega) )	{
 		ProfileProcess::Create(innsite, indim);
 		Nnucrr = Nnuc * (Nnuc-1) / 2;
 		nucrr = new double[Nnucrr];
 		nucstat = new double[Nnuc];
 		statespace = instatespace;
+		omega = new double;
 		SampleNucRR();
-		SampleNucStat();				
+		SampleNucStat();
+		SampleOmega();				
 
 	}
 	else	{
@@ -45,15 +47,17 @@ void CodonMutSelProfileProcess::Create(int innsite, int indim, CodonStateSpace* 
 
 void CodonMutSelProfileProcess::Delete()	{
 
-	if ( (nucrr) && (nucstat) )	{
+	if ( (nucrr) && (nucstat) && (omega) )	{
 		delete[] nucrr;
 		delete[] nucstat;
+		delete omega;
 		nucrr = 0;
 		nucstat = 0;
+		omega = 0;
 		ProfileProcess::Delete();
 	}
 	else	{
-		cerr << "Delete of CodonMutSelProfileProcess, nucrr and/or are/is 0.\n";
+		cerr << "Delete of CodonMutSelProfileProcess, nucrr and/or nucstat and/or omega are/is 0.\n";
 		exit(1);
 	}
 }
@@ -116,6 +120,79 @@ void CodonMutSelProfileProcess::SampleNucStat()	{
 	}
 }
 
+double CodonMutSelProfileProcess::LogOmegaPrior()        {
+
+	// flat
+	//return 0;
+
+	// exponential
+	// return - *omega;
+	
+	// jeffreys
+	// return -log(*omega);
+
+	if (omegaprior == 0)	{
+		// ratio of exponential random variables
+		return -2 * log(1 + *omega);
+	}
+    else if (omegaprior == 1)   {
+		// jeffreys
+		return -log(*omega);
+	}
+    else if (omegaprior == 2)   {
+        // gamma
+        return -*omega;
+    }
+    else    {
+        cerr << "error: did not recognize omega prior\n";
+        exit(1);
+    }
+}
+
+void CodonMutSelProfileProcess::SampleOmega()        {
+
+	//double rv1 = -log(Random::Uniform());
+	//double rv2 = -log(Random::Uniform());
+	//*omega = rv1/rv2;
+	*omega = 1.0;
+}
+
+double CodonMutSelProfileProcess::MoveOmega(double tuning)        {
+
+	int naccepted = 0;
+	double bkomega = *omega;
+	double deltalogprob = -ProfileSuffStatLogProb();
+	//double deltalogprob = 0;
+	deltalogprob -= LogOmegaPrior();
+
+	double h = tuning * (rnd::GetRandom().Uniform() -0.5);
+	double e = exp(h);
+	*omega *= e;
+
+
+	UpdateMatrices();
+	deltalogprob += h;
+	deltalogprob += LogOmegaPrior();
+	//cerr << "before calling ProfileSuffStatLogProb()\t";
+	//cerr.flush();
+
+	deltalogprob += ProfileSuffStatLogProb();
+
+	//cerr << "in move, omega is " << *omega << "\n";
+	//cerr.flush();
+	//cerr << "deltalobprob is : " << deltalogprob << "\n";
+	//cerr.flush();
+
+	int accepted = (rnd::GetRandom().Uniform() < exp(deltalogprob));
+	if (accepted)	{
+		naccepted++;	
+	}
+	else	{
+		*omega = bkomega;
+		UpdateMatrices();
+	}
+	return naccepted;	
+}
 
 double CodonMutSelProfileProcess::MoveNucRR(double tuning)	{
 

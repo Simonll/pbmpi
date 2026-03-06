@@ -40,11 +40,12 @@ class CodonMutSelFiniteProfileProcess : public virtual MatrixFiniteProfileProces
 		exit(1);
 	}
 
-	void Create(int innsite, int indim, int ncat, int infixncomp, int inempmix, string inmixtype, CodonStateSpace* instatespace)	{
+	void Create(int innsite, int indim, int ncat, int infixncomp, int inempmix, string inmixtype, CodonStateSpace* instatespace, int infixomega)	{
 		MatrixFiniteProfileProcess::Create(innsite,indim,ncat,infixncomp,inempmix,inmixtype);
 		//MatrixFiniteProfileProcess::Create(innsite,indim,ncat);
 		GeneralPathSuffStatMatrixMixtureProfileProcess::Create(innsite,indim);
 		CodonMutSelProfileProcess::Create(innsite,indim,instatespace);
+		fixomega = infixomega;
 	}
 	
 	void Delete()	{
@@ -90,6 +91,12 @@ class CodonMutSelFiniteProfileProcess : public virtual MatrixFiniteProfileProces
 			MoveNucRR(tuning*0.05,2);
 			MoveNucStat(tuning*0.05,2);
 
+			if (! fixomega)	{
+				MoveOmega(tuning);
+				MoveOmega(tuning*0.1);
+				MoveOmega(tuning*0.01);
+			}
+
 			// allocations
 			if (Ncomponent != GetNsite())	{
 				GlobalUpdateParameters();
@@ -129,6 +136,7 @@ class CodonMutSelFiniteProfileProcess : public virtual MatrixFiniteProfileProces
 		}
 		os << '\n';
 		os << '\n';		
+		os << *omega << '\n';
 
 		os << Ncomponent << '\n';
 		for (int j=0; j<GetDim(); j++)	{
@@ -156,6 +164,7 @@ class CodonMutSelFiniteProfileProcess : public virtual MatrixFiniteProfileProces
 			is >> nucrr[i];
 		}
 
+		is >> *omega;
 		is >> Ncomponent;
 		for (int j=0; j<GetDim(); j++)	{
 			is >> dirweight[j];
@@ -185,8 +194,8 @@ class CodonMutSelFiniteProfileProcess : public virtual MatrixFiniteProfileProces
 			cerr << "error in AACodonMutSelFiniteProfileProcess: matrixarray is not 0\n";
 			exit(1);
 		}
-		matrixarray[k] = new CodonMutSelProfileSubMatrix(statespace,nucrr,nucstat,profile[k],true);
-		//matrixarray[k] = new CodonMutSelProfileSubMatrix(statespace,nucrr,nucstat,profile[k],false);
+		matrixarray[k] = new CodonMutSelProfileSubMatrix(statespace,nucrr,nucstat,profile[k],omega,true);
+		//matrixarray[k] = new CodonMutSelProfileSubMatrix(statespace,nucrr,nucstat,profile[k],omega,false);
 	}
 
 	void UpdateMatrix(int k)	{
@@ -203,7 +212,7 @@ class CodonMutSelFiniteProfileProcess : public virtual MatrixFiniteProfileProces
 		exit(1);
 	}
 	*/
-	
+	int fixomega;
 };
 
 #endif

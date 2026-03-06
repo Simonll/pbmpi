@@ -330,6 +330,9 @@ void CodonMutSelProfileSubMatrix::ComputeArray(int i)	{
 				}
 				//Q[i][j] = (*NucMatrix)(a,b);
 				Q[i][j] = nucrr[GetNucRRIndex(a,b)] * nucstat[b];
+				if (!Synonymous(i,j))  {
+					Q[i][j] *= *omega;
+				}
 				double deltaF = log((codonprofile)[j] / (codonprofile)[i]);  
 				if (fabs(deltaF) < TOOSMALL)        {
 					Q[i][j] /= ( 1.0 - (deltaF / 2) );

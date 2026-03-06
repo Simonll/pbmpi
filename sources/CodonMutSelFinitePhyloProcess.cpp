@@ -28,7 +28,8 @@ void CodonMutSelFinitePhyloProcess::SlaveUpdateParameters()	{
 	int i,j,L1,L2,ni,nd,nbranch = GetNbranch(),nnucrr = GetNnucrr(),nnucstat = 4;
 	L1 = GetNmodeMax();
 	L2 = GetDim();
-	nd = 2+ nbranch + nnucrr + nnucstat + L2 + L1*(L2+1); // check if these last terms are correct in this context...
+	int nstate = data->GetNstate();
+	nd = 2+ nbranch + nnucrr + nnucstat + L2 + L1*(L2+1) + 1;; // check if these last terms are correct in this context...
 	ni = 1 + ProfileProcess::GetNsite();
 	int* ivector = new int[ni];
 	double* dvector = new double[nd];
@@ -63,6 +64,8 @@ void CodonMutSelFinitePhyloProcess::SlaveUpdateParameters()	{
 		dirweight[i] = dvector[index];
 		index++;
 	}
+	*omega = dvector[index];
+	index++;
 	Ncomponent = ivector[0];
 	for(i=0; i<ProfileProcess::GetNsite(); ++i) {
 		FiniteProfileProcess::alloc[i] = ivector[1+i];
@@ -116,7 +119,7 @@ void CodonMutSelFinitePhyloProcess::GlobalUpdateParameters() {
 	nnucstat = 4;	
 	L1 = GetNmodeMax();
 	L2 = GetDim();
-	nd = 2 + nbranch + nnucrr + nnucstat + L2 + L1*(L2+1);  // check if these last terms are correct in this context...
+	nd = 2 + nbranch + nnucrr + nnucstat + L2 + L1*(L2+1) + 1;;  // check if these last terms are correct in this context...
 	ni = 1 + ProfileProcess::GetNsite(); // 1 for the number of componenets, and the rest for allocations
 	int ivector[ni];
 	double dvector[nd]; 
@@ -155,6 +158,9 @@ void CodonMutSelFinitePhyloProcess::GlobalUpdateParameters() {
 		dvector[index] = dirweight[i];
 		index++;
 	}
+
+	dvector[index] = *omega;
+	index++;
 
 	// Now the vector of ints
 	ivector[0] = GetNcomponent();

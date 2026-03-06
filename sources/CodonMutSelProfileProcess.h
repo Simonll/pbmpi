@@ -29,7 +29,7 @@ class CodonMutSelProfileProcess : public virtual GeneralPathSuffStatMatrixProfil
 
 	public:
 
-	CodonMutSelProfileProcess() : nucrr(0), nucstat(0), statespace(0) {}
+	CodonMutSelProfileProcess() : nucrr(0), nucstat(0),omega(0), statespace(0) {}
 	virtual ~CodonMutSelProfileProcess() {}
 
 	int GetNnucrr()	{
@@ -68,7 +68,9 @@ class CodonMutSelProfileProcess : public virtual GeneralPathSuffStatMatrixProfil
 		return nucstat[i];
 	}
 
-
+	double GetOmega()	{
+		return *omega;
+	}
 	protected:
 
 	virtual void Create(int innsite, int indim, CodonStateSpace* instatespace);
@@ -83,13 +85,20 @@ class CodonMutSelProfileProcess : public virtual GeneralPathSuffStatMatrixProfil
 	virtual double LogNucStatPrior();
 	virtual void SampleNucStat();
 
+	// omega
+	virtual double LogOmegaPrior();
+	virtual void SampleOmega();
+
 	double MoveNucRR(double tuning); 
 	double MoveNucRR(double tuning, int n); 
 	double MoveNucStat(double tuning, int n);
-	
+	double MoveOmega(double tuning); 
+
 	int Nnucrr;
 	double* nucrr;
 	double* nucstat;
+	double* omega;
+	int omegaprior;
 	CodonStateSpace* statespace;
 };
 
