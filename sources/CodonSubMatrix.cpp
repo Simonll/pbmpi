@@ -144,10 +144,10 @@ double AAMutSelProfileSubMatrix::GetRate()	{
 	double norm = 0;
 	for (int i=0; i<Nnuc-1; i++)	{
 		for (int j=i+1; j<Nnuc; j++)	{
-			norm += nucstat[i] * nucstat[j] * nucrr[GetNucRRIndex(i,j)];
+			norm += mStationary[i] * Q[i][j];
 		}
 	}
-	return 2 * (norm * 3);
+	return 2 * norm;
 	/*
 	double mutstatnorm = 0;
 	for (int i=0; i<Nstate; i++)	{
@@ -306,10 +306,10 @@ double AACodonMutSelProfileSubMatrix::GetRate()	{
 	double norm = 0;
 	for (int i=0; i<Nnuc-1; i++)	{
 		for (int j=i+1; j<Nnuc; j++)	{
-			norm += nucstat[i] * nucstat[j] * nucrr[GetNucRRIndex(i,j)];
+			norm += mStationary[i] * Q[i][j];
 		}
 	}
-	return 2 * (norm * 3);
+	return 2 * norm;
 }
 //*/
 
@@ -406,10 +406,10 @@ double CodonMutSelProfileSubMatrix::GetRate()	{
 	double norm = 0;
 	for (int i=0; i<Nnuc-1; i++)	{
 		for (int j=i+1; j<Nnuc; j++)	{
-			norm += nucstat[i] * nucstat[j] * nucrr[GetNucRRIndex(i,j)];
+			norm += mStationary[i] * Q[i][j];
 		}
 	}
-	return 2 * (norm * 3);
+	return 2 * norm;
 	/*double mutstatnorm = 0;
 	for (int i=0; i<Nstate; i++)	{
 		mutstatnorm +=  nucstat[GetCodonPosition(0,i)] *

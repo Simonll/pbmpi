@@ -28,7 +28,6 @@ void CodonMutSelFinitePhyloProcess::SlaveUpdateParameters()	{
 	int i,j,L1,L2,ni,nd,nbranch = GetNbranch(),nnucrr = GetNnucrr(),nnucstat = 4;
 	L1 = GetNmodeMax();
 	L2 = GetDim();
-	int nstate = data->GetNstate();
 	nd = 2+ nbranch + nnucrr + nnucstat + L2 + L1*(L2+1) + 1;; // check if these last terms are correct in this context...
 	ni = 1 + ProfileProcess::GetNsite();
 	int* ivector = new int[ni];
