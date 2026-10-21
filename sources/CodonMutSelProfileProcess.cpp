@@ -26,14 +26,16 @@ along with PhyloBayes. If not, see <http://www.gnu.org/licenses/>.
 
 void CodonMutSelProfileProcess::Create(int innsite, int indim, CodonStateSpace* instatespace)	{
 	
-	if ( (!nucrr) && (!nucstat) )	{
+	if ( (!nucrr) && (!nucstat) && (!omega) )	{
 		ProfileProcess::Create(innsite, indim);
 		Nnucrr = Nnuc * (Nnuc-1) / 2;
 		nucrr = new double[Nnucrr];
 		nucstat = new double[Nnuc];
+		omega = new double;
 		statespace = instatespace;
 		SampleNucRR();
-		SampleNucStat();				
+		SampleNucStat();
+		SampleOmega();
 
 	}
 	else	{
@@ -45,11 +47,13 @@ void CodonMutSelProfileProcess::Create(int innsite, int indim, CodonStateSpace* 
 
 void CodonMutSelProfileProcess::Delete()	{
 
-	if ( (nucrr) && (nucstat) )	{
+	if ( (nucrr) && (nucstat) && (omega) )	{
 		delete[] nucrr;
 		delete[] nucstat;
+		delete omega;
 		nucrr = 0;
 		nucstat = 0;
+		omega = 0;
 		ProfileProcess::Delete();
 	}
 	else	{
@@ -202,4 +206,53 @@ double CodonMutSelProfileProcess::MoveNucStat(double tuning, int n)	{
 	return naccepted; 
 }
 
+double CodonMutSelProfileProcess::LogOmegaPrior()	{
 
+	if (omegaprior == 0)	{
+		// ratio of exponential random variables
+		return -2 * log(1 + *omega);
+	}
+	else if (omegaprior == 1)	{
+		// jeffreys
+		return -log(*omega);
+	}
+	else if (omegaprior == 2)	{
+		// gamma
+		return -*omega;
+	}
+	else	{
+		cerr << "error: did not recognize omega prior\n";
+		exit(1);
+	}
+}
+
+void CodonMutSelProfileProcess::SampleOmega()	{
+	*omega = 1.0;
+}
+
+double CodonMutSelProfileProcess::MoveOmega(double tuning)	{
+
+	int naccepted = 0;
+	double bkomega = *omega;
+	double deltalogprob = -ProfileSuffStatLogProb();
+	deltalogprob -= LogOmegaPrior();
+
+	double h = tuning * (rnd::GetRandom().Uniform() - 0.5);
+	double e = exp(h);
+	*omega *= e;
+
+	UpdateMatrices();
+	deltalogprob += h;
+	deltalogprob += LogOmegaPrior();
+	deltalogprob += ProfileSuffStatLogProb();
+
+	int accepted = (rnd::GetRandom().Uniform() < exp(deltalogprob));
+	if (accepted)	{
+		naccepted++;
+	}
+	else	{
+		*omega = bkomega;
+		UpdateMatrices();
+	}
+	return naccepted;
+}

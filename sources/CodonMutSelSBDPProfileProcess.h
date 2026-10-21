@@ -185,7 +185,7 @@ class CodonMutSelSBDPProfileProcess : public virtual MatrixSBDPProfileProcess, p
 			exit(1);
 		}
 		//matrixarray[k] = new AAMutSelProfileSubMatrix(statespace,nucrr,nucstat,profile[k],false);
-		matrixarray[k] = new CodonMutSelProfileSubMatrix(statespace,nucrr,nucstat,profile[k],true);
+		matrixarray[k] = new CodonMutSelProfileSubMatrix(statespace,nucrr,nucstat,profile[k],omega,true);
 	}
 	
 	virtual void SwapComponents(int cat1, int cat2)	{

@@ -147,7 +147,7 @@ class Model	{
 		else if (modeltype == 4)	{
 			if (mixturetype == 1)	{
 				type = "CODONMUTSELFINITE";
-				process = new CodonMutSelFinitePhyloProcess(datafile,treefile,codetype,nmodemax,ncat,fixncomp,empmix,mixtype,fixtopo,fixbl,NSPR,NNNI,dirweightprior,dc,myid,nprocs);
+				process = new CodonMutSelFinitePhyloProcess(datafile,treefile,codetype,nmodemax,ncat,fixncomp,empmix,mixtype,fixtopo,fixbl,NSPR,NNNI,fixomega,omegaprior,dirweightprior,dc,myid,nprocs);
 			}
 			else if (mixturetype == 3)	{
 				type = "CODONMUTSELSBDP";
